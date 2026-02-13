@@ -1,0 +1,55 @@
+﻿<Window x:Class="WinCalendar.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WinCalendar.App"
+        mc:Ignorable="d"
+        Title="WinCalendar"
+        Height="720"
+        Width="1080"
+        MinHeight="600"
+        MinWidth="900">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBlock FontSize="28" FontWeight="SemiBold" Text="{Binding Title}" />
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,12,0,12">
+            <Button Width="140" Margin="0,0,8,0" Content="Day" Command="{Binding SetDayViewCommand}" />
+            <Button Width="140" Margin="0,0,8,0" Content="Week" Command="{Binding SetWeekViewCommand}" />
+            <Button Width="140" Margin="0,0,8,0" Content="Work Week" Command="{Binding SetWorkWeekViewCommand}" />
+            <Button Width="140" Margin="0,0,8,0" Content="Month" Command="{Binding SetMonthViewCommand}" />
+            <TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Text="{Binding ActiveViewLabel}" />
+        </StackPanel>
+
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                <Button Width="200" Content="Load Sample Events" Command="{Binding LoadSampleEventsCommand}" />
+            </StackPanel>
+
+            <DataGrid Grid.Row="1"
+                      ItemsSource="{Binding Events}"
+                      IsReadOnly="True"
+                      AutoGenerateColumns="False"
+                      CanUserAddRows="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Title" Binding="{Binding Title}" Width="2*" />
+                    <DataGridTextColumn Header="Start" Binding="{Binding StartDateTime}" Width="2*" />
+                    <DataGridTextColumn Header="End" Binding="{Binding EndDateTime}" Width="2*" />
+                    <DataGridCheckBoxColumn Header="All Day" Binding="{Binding IsAllDay}" Width="*" />
+                    <DataGridTextColumn Header="Category" Binding="{Binding Category}" Width="*" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+    </Grid>
+</Window>

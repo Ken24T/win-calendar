@@ -16,10 +16,10 @@ Last updated: 2026-02-14
 - [x] All-day mode disables time fields and saves full-day range
 - [x] Month date click creates event seeded to selected day
 - [x] Month view highlights today
+- [x] Keyboard shortcuts for navigation, view switching, create/search, and refresh
 
 ## Still to manually verify against Rust app
 
-- [ ] Keyboard flows for calendar navigation and event editing
 - [ ] Exact date/time formatting parity across all views
 - [ ] All-day multi-day event rendering behaviour in month and week views
 - [ ] Recurrence edge cases (BYDAY/BYMONTHDAY combinations) in UI workflows

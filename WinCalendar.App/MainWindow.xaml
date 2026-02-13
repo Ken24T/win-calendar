@@ -11,6 +11,19 @@
         Width="1080"
         MinHeight="600"
         MinWidth="900">
+    <Window.InputBindings>
+        <KeyBinding Modifiers="Control" Key="N" Command="{Binding OpenNewEventDialogCommand}" />
+        <KeyBinding Modifiers="Control" Key="F" Command="{Binding OpenSearchDialogCommand}" />
+        <KeyBinding Modifiers="Control" Key="D1" Command="{Binding SetDayViewCommand}" />
+        <KeyBinding Modifiers="Control" Key="D2" Command="{Binding SetWeekViewCommand}" />
+        <KeyBinding Modifiers="Control" Key="D3" Command="{Binding SetWorkWeekViewCommand}" />
+        <KeyBinding Modifiers="Control" Key="D4" Command="{Binding SetMonthViewCommand}" />
+        <KeyBinding Modifiers="Control" Key="Left" Command="{Binding PreviousRangeCommand}" />
+        <KeyBinding Modifiers="Control" Key="Right" Command="{Binding NextRangeCommand}" />
+        <KeyBinding Modifiers="Control" Key="T" Command="{Binding GoToTodayCommand}" />
+        <KeyBinding Key="F5" Command="{Binding RefreshViewCommand}" />
+    </Window.InputBindings>
+
     <Window.Resources>
         <converters:EnumToVisibilityConverter x:Key="EnumToVisibilityConverter" />
         <converters:BoolToMonthForegroundConverter x:Key="BoolToMonthForegroundConverter" />

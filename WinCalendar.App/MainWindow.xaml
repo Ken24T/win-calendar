@@ -3,15 +3,22 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WinCalendar.App"
+        xmlns:converters="clr-namespace:WinCalendar.App.Converters"
+        xmlns:views="clr-namespace:WinCalendar.App.Views.Calendar"
         mc:Ignorable="d"
         Title="WinCalendar"
         Height="720"
         Width="1080"
         MinHeight="600"
         MinWidth="900">
+    <Window.Resources>
+        <converters:EnumToVisibilityConverter x:Key="EnumToVisibilityConverter" />
+        <converters:BoolToMonthForegroundConverter x:Key="BoolToMonthForegroundConverter" />
+    </Window.Resources>
+
     <Grid Margin="16">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -27,29 +34,22 @@
             <TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Text="{Binding ActiveViewLabel}" />
         </StackPanel>
 
-        <Grid Grid.Row="2">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
+        <DockPanel Grid.Row="2" Margin="0,0,0,10">
+            <Button Width="200" Content="Load Sample Events" Command="{Binding LoadSampleEventsCommand}" DockPanel.Dock="Left" />
 
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                <Button Width="200" Content="Load Sample Events" Command="{Binding LoadSampleEventsCommand}" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Right">
+                <Button Width="90" Margin="0,0,8,0" Content="Previous" Command="{Binding PreviousRangeCommand}" />
+                <Button Width="90" Margin="0,0,8,0" Content="Today" Command="{Binding GoToTodayCommand}" />
+                <Button Width="90" Margin="0,0,8,0" Content="Next" Command="{Binding NextRangeCommand}" />
+                <TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Text="{Binding CurrentRangeLabel}" />
             </StackPanel>
+        </DockPanel>
 
-            <DataGrid Grid.Row="1"
-                      ItemsSource="{Binding Events}"
-                      IsReadOnly="True"
-                      AutoGenerateColumns="False"
-                      CanUserAddRows="False">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Title" Binding="{Binding Title}" Width="2*" />
-                    <DataGridTextColumn Header="Start" Binding="{Binding StartDateTime}" Width="2*" />
-                    <DataGridTextColumn Header="End" Binding="{Binding EndDateTime}" Width="2*" />
-                    <DataGridCheckBoxColumn Header="All Day" Binding="{Binding IsAllDay}" Width="*" />
-                    <DataGridTextColumn Header="Category" Binding="{Binding Category}" Width="*" />
-                </DataGrid.Columns>
-            </DataGrid>
+        <Grid Grid.Row="3">
+            <views:DayViewControl Visibility="{Binding ActiveView, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=Day}" />
+            <views:WeekViewControl Visibility="{Binding ActiveView, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=Week}" />
+            <views:WorkWeekViewControl Visibility="{Binding ActiveView, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=WorkWeek}" />
+            <views:MonthViewControl Visibility="{Binding ActiveView, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=Month}" />
         </Grid>
     </Grid>
 </Window>

@@ -44,7 +44,7 @@ Replicate functional behaviour from `D:/Development/Repos/rust-calendar` in a Wi
 - [x] Backup/restore parity
 
 #### 5. UI parity for core views
-- [ ] Day/Week/Work Week/Month navigation and rendering
+- [x] Day/Week/Work Week/Month navigation and rendering
 - [ ] Event create/edit dialogs
 - [ ] Search and management dialogs
 

@@ -37,11 +37,55 @@ internal sealed class SqliteEventRepository(SqliteConnectionFactory connectionFa
             .ToList();
     }
 
-    public async Task AddAsync(CalendarEvent calendarEvent, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<CalendarEvent>> GetInRangeAsync(
+        DateTimeOffset rangeStart,
+        DateTimeOffset rangeEnd,
+        CancellationToken cancellationToken = default)
     {
         const string sql =
             """
-            INSERT INTO events
+            SELECT
+                id,
+                title,
+                start_datetime AS StartDateTime,
+                end_datetime AS EndDateTime,
+                is_all_day AS IsAllDay,
+                category,
+                location,
+                notes,
+                recurrence_rule AS RecurrenceRule
+            FROM events
+            WHERE start_datetime <= @RangeEnd
+              AND end_datetime >= @RangeStart
+            ORDER BY start_datetime;
+            """;
+
+        await using var connection = connectionFactory.CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+
+        var rows = await connection.QueryAsync<EventRow>(
+            new CommandDefinition(
+                sql,
+                new
+                {
+                    RangeStart = rangeStart.ToString("O"),
+                    RangeEnd = rangeEnd.ToString("O")
+                },
+                cancellationToken: cancellationToken));
+
+        return rows.Select(Map).ToList();
+    }
+
+    public async Task AddAsync(CalendarEvent calendarEvent, CancellationToken cancellationToken = default)
+    {
+        await UpsertAsync(calendarEvent, cancellationToken);
+    }
+
+    public async Task UpsertAsync(CalendarEvent calendarEvent, CancellationToken cancellationToken = default)
+    {
+        const string sql =
+            """
+            INSERT OR REPLACE INTO events
             (
                 id,
                 title,
@@ -97,6 +141,19 @@ internal sealed class SqliteEventRepository(SqliteConnectionFactory connectionFa
                     UpdatedUtc = now
                 },
                 cancellationToken: cancellationToken));
+    }
+
+    public async Task DeleteAsync(Guid eventId, CancellationToken cancellationToken = default)
+    {
+        const string sql = "DELETE FROM events WHERE id = @Id;";
+
+        await using var connection = connectionFactory.CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+
+        await connection.ExecuteAsync(new CommandDefinition(
+            sql,
+            new { Id = eventId.ToString() },
+            cancellationToken: cancellationToken));
     }
 
     private static CalendarEvent Map(EventRow row)

@@ -17,6 +17,7 @@ public static class DependencyInjection
         services.AddSingleton<ICategoryRepository, SqliteCategoryRepository>();
         services.AddSingleton<IEventTemplateRepository, SqliteEventTemplateRepository>();
         services.AddSingleton<ISettingsRepository, SqliteSettingsRepository>();
+        services.AddSingleton<IThemeRepository, SqliteThemeRepository>();
         services.AddSingleton<IBackupService, DatabaseBackupService>();
         return services;
     }

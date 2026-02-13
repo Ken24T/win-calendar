@@ -75,13 +75,41 @@ public class CoreServicesTests
 
     private sealed class FakeEventRepository(IReadOnlyList<CalendarEvent> items) : IEventRepository
     {
+        private readonly List<CalendarEvent> _items = [.. items];
+
         public Task<IReadOnlyList<CalendarEvent>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            return Task.FromResult(items);
+            return Task.FromResult<IReadOnlyList<CalendarEvent>>(_items);
+        }
+
+        public Task<IReadOnlyList<CalendarEvent>> GetInRangeAsync(
+            DateTimeOffset rangeStart,
+            DateTimeOffset rangeEnd,
+            CancellationToken cancellationToken = default)
+        {
+            var rows = _items
+                .Where(x => x.StartDateTime <= rangeEnd && x.EndDateTime >= rangeStart)
+                .ToList();
+
+            return Task.FromResult<IReadOnlyList<CalendarEvent>>(rows);
         }
 
         public Task AddAsync(CalendarEvent calendarEvent, CancellationToken cancellationToken = default)
         {
+            _items.Add(calendarEvent);
+            return Task.CompletedTask;
+        }
+
+        public Task UpsertAsync(CalendarEvent calendarEvent, CancellationToken cancellationToken = default)
+        {
+            _items.RemoveAll(x => x.Id == calendarEvent.Id);
+            _items.Add(calendarEvent);
+            return Task.CompletedTask;
+        }
+
+        public Task DeleteAsync(Guid eventId, CancellationToken cancellationToken = default)
+        {
+            _items.RemoveAll(x => x.Id == eventId);
             return Task.CompletedTask;
         }
     }

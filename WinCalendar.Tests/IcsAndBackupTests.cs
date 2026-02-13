@@ -109,6 +109,32 @@ public class IcsAndBackupTests
             return Task.CompletedTask;
         }
 
+        public Task<IReadOnlyList<CalendarEvent>> GetInRangeAsync(
+            DateTimeOffset rangeStart,
+            DateTimeOffset rangeEnd,
+            CancellationToken cancellationToken = default)
+        {
+            var rows = _items
+                .Where(x => x.StartDateTime <= rangeEnd && x.EndDateTime >= rangeStart)
+                .OrderBy(x => x.StartDateTime)
+                .ToList();
+
+            return Task.FromResult<IReadOnlyList<CalendarEvent>>(rows);
+        }
+
+        public Task UpsertAsync(CalendarEvent calendarEvent, CancellationToken cancellationToken = default)
+        {
+            _items.RemoveAll(x => x.Id == calendarEvent.Id);
+            _items.Add(calendarEvent);
+            return Task.CompletedTask;
+        }
+
+        public Task DeleteAsync(Guid eventId, CancellationToken cancellationToken = default)
+        {
+            _items.RemoveAll(x => x.Id == eventId);
+            return Task.CompletedTask;
+        }
+
         public void Reset(IEnumerable<CalendarEvent> newItems)
         {
             _items.Clear();

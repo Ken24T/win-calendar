@@ -11,6 +11,24 @@ internal sealed class EventService(IEventRepository eventRepository) : IEventSer
         return eventRepository.GetAllAsync(cancellationToken);
     }
 
+    public Task<IReadOnlyList<CalendarEvent>> GetEventsInRangeAsync(
+        DateTimeOffset rangeStart,
+        DateTimeOffset rangeEnd,
+        CancellationToken cancellationToken = default)
+    {
+        return eventRepository.GetInRangeAsync(rangeStart, rangeEnd, cancellationToken);
+    }
+
+    public Task SaveEventAsync(CalendarEvent calendarEvent, CancellationToken cancellationToken = default)
+    {
+        return eventRepository.UpsertAsync(calendarEvent, cancellationToken);
+    }
+
+    public Task DeleteEventAsync(Guid eventId, CancellationToken cancellationToken = default)
+    {
+        return eventRepository.DeleteAsync(eventId, cancellationToken);
+    }
+
     public async Task SeedSampleEventsAsync(CancellationToken cancellationToken = default)
     {
         var existingEvents = await eventRepository.GetAllAsync(cancellationToken);
@@ -43,7 +61,7 @@ internal sealed class EventService(IEventRepository eventRepository) : IEventSer
 
         foreach (var calendarEvent in samples)
         {
-            await eventRepository.AddAsync(calendarEvent, cancellationToken);
+            await eventRepository.UpsertAsync(calendarEvent, cancellationToken);
         }
     }
 }

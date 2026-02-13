@@ -34,12 +34,12 @@ Replicate functional behaviour from `D:/Development/Repos/rust-calendar` in a Wi
 - [x] Preserve recurrence exception semantics (JSON lists)
 - [x] Add importer validation report (counts + conversion summary)
 
-#### 4. Core service parity
-- [ ] Event CRUD and range queries
+#### 4. Core service parity (completed)
+- [x] Event CRUD and range queries
 - [x] Recurrence expansion parity
 - [x] Search parity
 - [x] Categories/templates/settings basics service layer
-- [ ] Theme service parity
+- [x] Theme service parity
 - [x] ICS import/export parity
 - [x] Backup/restore parity
 

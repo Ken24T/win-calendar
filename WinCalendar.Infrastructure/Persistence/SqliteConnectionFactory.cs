@@ -6,6 +6,8 @@ public sealed class SqliteConnectionFactory
 {
     private readonly string _databasePath;
 
+    public string DatabasePath => _databasePath;
+
     public SqliteConnectionFactory(string? databasePath = null)
     {
         if (!string.IsNullOrWhiteSpace(databasePath))

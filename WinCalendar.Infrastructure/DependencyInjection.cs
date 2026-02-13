@@ -1,7 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using WinCalendar.Application.Abstractions;
+using WinCalendar.Application.Contracts;
 using WinCalendar.Infrastructure.Persistence;
 using WinCalendar.Infrastructure.Repositories;
+using WinCalendar.Infrastructure.Services;
 
 namespace WinCalendar.Infrastructure;
 
@@ -15,6 +17,7 @@ public static class DependencyInjection
         services.AddSingleton<ICategoryRepository, SqliteCategoryRepository>();
         services.AddSingleton<IEventTemplateRepository, SqliteEventTemplateRepository>();
         services.AddSingleton<ISettingsRepository, SqliteSettingsRepository>();
+        services.AddSingleton<IBackupService, DatabaseBackupService>();
         return services;
     }
 }

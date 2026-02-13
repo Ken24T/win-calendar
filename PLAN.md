@@ -40,8 +40,8 @@ Replicate functional behaviour from `D:/Development/Repos/rust-calendar` in a Wi
 - [x] Search parity
 - [x] Categories/templates/settings basics service layer
 - [ ] Theme service parity
-- [ ] ICS import/export parity
-- [ ] Backup/restore parity
+- [x] ICS import/export parity
+- [x] Backup/restore parity
 
 #### 5. UI parity for core views
 - [ ] Day/Week/Work Week/Month navigation and rendering

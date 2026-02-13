@@ -45,7 +45,7 @@
                             <ItemsControl Grid.Row="1" ItemsSource="{Binding Events}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Button Content="{Binding Title}"
+                                        <Button Content="{Binding MonthCellLabel}"
                                                 FontSize="11"
                                                 HorizontalContentAlignment="Left"
                                                 Margin="0,2,0,0"

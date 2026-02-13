@@ -138,7 +138,9 @@ public partial class ShellViewModel : ObservableObject
 
         var items = _allEvents
             .Where(item => IsOverlapping(item, dayStart, dayEnd))
-            .OrderBy(item => item.StartDateTime)
+            .OrderByDescending(item => item.IsAllDay)
+            .ThenBy(item => item.StartDateTime)
+            .ThenBy(item => item.Title)
             .ToList();
 
         foreach (var item in items)
@@ -162,7 +164,9 @@ public partial class ShellViewModel : ObservableObject
 
             var events = _allEvents
                 .Where(item => IsOverlapping(item, dayStart, dayEnd))
-                .OrderBy(item => item.StartDateTime)
+                .OrderByDescending(item => item.IsAllDay)
+                .ThenBy(item => item.StartDateTime)
+                .ThenBy(item => item.Title)
                 .ToList();
 
             WeekColumns.Add(new WeekDayColumnViewModel
@@ -189,7 +193,9 @@ public partial class ShellViewModel : ObservableObject
 
             var events = _allEvents
                 .Where(item => IsOverlapping(item, cellStart, cellEnd))
-                .OrderBy(item => item.StartDateTime)
+                .OrderByDescending(item => item.IsAllDay)
+                .ThenBy(item => item.StartDateTime)
+                .ThenBy(item => item.Title)
                 .Take(3)
                 .ToList();
 

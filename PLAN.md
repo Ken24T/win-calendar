@@ -52,6 +52,9 @@ Replicate functional behaviour from `D:/Development/Repos/rust-calendar` in a Wi
 - [x] Day/Week/Work Week/Month navigation and rendering
 - [x] Event create/edit dialogs
 - [x] Search and management dialogs
+- [x] Recurrence exceptions editing flow
+- [x] Month date click to create event
+- [x] Explicit start/end time editing support
 
 #### 6. Verification for phase 1
 

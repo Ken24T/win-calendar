@@ -11,7 +11,18 @@ public partial class ShellViewModel
     [RelayCommand]
     private async Task OpenNewEventDialogAsync()
     {
-        await OpenEventDialogAsync(null);
+        await OpenEventDialogAsync(null, null, null);
+    }
+
+    [RelayCommand]
+    private async Task OpenNewEventOnDateDialogAsync(DateTime? date)
+    {
+        if (!date.HasValue)
+        {
+            return;
+        }
+
+        await OpenEventDialogAsync(null, null, date.Value);
     }
 
     [RelayCommand]
@@ -22,7 +33,7 @@ public partial class ShellViewModel
             return;
         }
 
-        await OpenEventDialogAsync(calendarEvent);
+        await OpenEventDialogAsync(calendarEvent, null, null);
     }
 
     [RelayCommand]
@@ -37,7 +48,7 @@ public partial class ShellViewModel
 
         viewModel.EditEventRequested += async calendarEvent =>
         {
-            await OpenEventDialogAsync(calendarEvent, window);
+            await OpenEventDialogAsync(calendarEvent, window, null);
             await viewModel.SearchCommand.ExecuteAsync(null);
         };
 
@@ -74,13 +85,20 @@ public partial class ShellViewModel
         window.ShowDialog();
     }
 
-    private async Task OpenEventDialogAsync(CalendarEvent? calendarEvent, Window? owner = null)
+    private async Task OpenEventDialogAsync(CalendarEvent? calendarEvent, Window? owner = null, DateTime? newEventDate = null)
     {
         var viewModel = new EventEditorViewModel(_eventService, _categoryService);
 
         if (calendarEvent is null)
         {
-            await viewModel.InitialiseForNewAsync();
+            if (newEventDate.HasValue)
+            {
+                await viewModel.InitialiseForNewOnDateAsync(newEventDate.Value);
+            }
+            else
+            {
+                await viewModel.InitialiseForNewAsync();
+            }
         }
         else
         {

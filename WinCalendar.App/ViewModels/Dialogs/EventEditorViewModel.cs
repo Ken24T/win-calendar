@@ -28,7 +28,13 @@ public partial class EventEditorViewModel : ObservableObject, IDialogRequestClos
     private DateTimeOffset _startDateTime = DateTimeOffset.Now;
 
     [ObservableProperty]
+    private string _startTimeText = DateTimeOffset.Now.ToString("HH:mm");
+
+    [ObservableProperty]
     private DateTimeOffset _endDateTime = DateTimeOffset.Now.AddHours(1);
+
+    [ObservableProperty]
+    private string _endTimeText = DateTimeOffset.Now.AddHours(1).ToString("HH:mm");
 
     [ObservableProperty]
     private bool _isAllDay;
@@ -67,6 +73,29 @@ public partial class EventEditorViewModel : ObservableObject, IDialogRequestClos
         Notes = null;
         RecurrenceRule = null;
         RecurrenceExceptionsText = string.Empty;
+        StartTimeText = StartDateTime.ToString("HH:mm");
+        EndTimeText = EndDateTime.ToString("HH:mm");
+
+        await LoadCategoriesAsync();
+    }
+
+    public async Task InitialiseForNewOnDateAsync(DateTime date)
+    {
+        _eventId = Guid.NewGuid();
+        CanDelete = false;
+
+        var offset = DateTimeOffset.Now.Offset;
+        StartDateTime = new DateTimeOffset(date.Year, date.Month, date.Day, 9, 0, 0, offset);
+        EndDateTime = StartDateTime.AddHours(1);
+        Title = string.Empty;
+        IsAllDay = false;
+        Category = "General";
+        Location = null;
+        Notes = null;
+        RecurrenceRule = null;
+        RecurrenceExceptionsText = string.Empty;
+        StartTimeText = StartDateTime.ToString("HH:mm");
+        EndTimeText = EndDateTime.ToString("HH:mm");
 
         await LoadCategoriesAsync();
     }
@@ -85,6 +114,8 @@ public partial class EventEditorViewModel : ObservableObject, IDialogRequestClos
         Notes = calendarEvent.Notes;
         RecurrenceRule = calendarEvent.RecurrenceRule;
         RecurrenceExceptionsText = FormatRecurrenceExceptions(calendarEvent.RecurrenceExceptions);
+        StartTimeText = StartDateTime.ToString("HH:mm");
+        EndTimeText = EndDateTime.ToString("HH:mm");
 
         await LoadCategoriesAsync();
     }
@@ -102,7 +133,25 @@ public partial class EventEditorViewModel : ObservableObject, IDialogRequestClos
     [RelayCommand]
     private async Task SaveAsync()
     {
-        if (string.IsNullOrWhiteSpace(Title) || EndDateTime < StartDateTime)
+        if (string.IsNullOrWhiteSpace(Title))
+        {
+            return;
+        }
+
+        if (!TryParseTime(StartTimeText, out var startTime) || !TryParseTime(EndTimeText, out var endTime))
+        {
+            return;
+        }
+
+        var start = IsAllDay
+            ? new DateTimeOffset(StartDateTime.Year, StartDateTime.Month, StartDateTime.Day, 0, 0, 0, StartDateTime.Offset)
+            : new DateTimeOffset(StartDateTime.Year, StartDateTime.Month, StartDateTime.Day, startTime.Hours, startTime.Minutes, 0, StartDateTime.Offset);
+
+        var end = IsAllDay
+            ? new DateTimeOffset(EndDateTime.Year, EndDateTime.Month, EndDateTime.Day, 23, 59, 0, EndDateTime.Offset)
+            : new DateTimeOffset(EndDateTime.Year, EndDateTime.Month, EndDateTime.Day, endTime.Hours, endTime.Minutes, 0, EndDateTime.Offset);
+
+        if (end < start)
         {
             return;
         }
@@ -111,8 +160,8 @@ public partial class EventEditorViewModel : ObservableObject, IDialogRequestClos
         {
             Id = _eventId,
             Title = Title.Trim(),
-            StartDateTime = StartDateTime,
-            EndDateTime = EndDateTime,
+            StartDateTime = start,
+            EndDateTime = end,
             IsAllDay = IsAllDay,
             Category = string.IsNullOrWhiteSpace(Category) ? "General" : Category.Trim(),
             Location = string.IsNullOrWhiteSpace(Location) ? null : Location.Trim(),
@@ -191,5 +240,18 @@ public partial class EventEditorViewModel : ObservableObject, IDialogRequestClos
                 .OrderBy(item => item)
                 .Select(item => item.ToString("yyyy-MM-dd"))
                 .Distinct(StringComparer.Ordinal));
+    }
+
+    private static bool TryParseTime(string? value, out TimeSpan time)
+    {
+        var formats = new[] { "H:mm", "HH:mm", "h:mm tt", "hh:mm tt" };
+        if (DateTime.TryParseExact(value, formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsed))
+        {
+            time = parsed.TimeOfDay;
+            return true;
+        }
+
+        time = default;
+        return false;
     }
 }

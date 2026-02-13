@@ -21,9 +21,15 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
-                            <TextBlock Text="{Binding Date.Day}"
-                                       FontWeight="SemiBold"
-                                       Foreground="{Binding IsCurrentMonth, Converter={StaticResource BoolToMonthForegroundConverter}}" />
+                            <Button Content="{Binding Date.Day}"
+                                    HorizontalAlignment="Left"
+                                    Padding="0"
+                                    BorderThickness="0"
+                                    Background="Transparent"
+                                    FontWeight="SemiBold"
+                                    Foreground="{Binding IsCurrentMonth, Converter={StaticResource BoolToMonthForegroundConverter}}"
+                                    Command="{Binding DataContext.OpenNewEventOnDateDialogCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    CommandParameter="{Binding Date}" />
                             <ItemsControl Grid.Row="1" ItemsSource="{Binding Events}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>

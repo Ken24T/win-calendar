@@ -36,9 +36,10 @@ Replicate functional behaviour from `D:/Development/Repos/rust-calendar` in a Wi
 
 #### 4. Core service parity
 - [ ] Event CRUD and range queries
-- [ ] Recurrence expansion parity
-- [ ] Search parity
-- [ ] Categories/templates/settings/theme basics parity
+- [x] Recurrence expansion parity
+- [x] Search parity
+- [x] Categories/templates/settings basics service layer
+- [ ] Theme service parity
 - [ ] ICS import/export parity
 - [ ] Backup/restore parity
 
@@ -48,7 +49,7 @@ Replicate functional behaviour from `D:/Development/Repos/rust-calendar` in a Wi
 - [ ] Search and management dialogs
 
 #### 6. Verification for phase 1
-- [ ] Unit/integration tests for services and recurrence
+- [x] Unit/integration tests for services and recurrence
 - [ ] Import fixtures and conversion tests
 - [ ] Manual parity checklist against Rust app
 

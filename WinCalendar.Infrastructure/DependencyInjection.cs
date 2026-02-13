@@ -12,6 +12,9 @@ public static class DependencyInjection
         services.AddSingleton<SqliteConnectionFactory>();
         services.AddSingleton<IDatabaseMigrator, SqliteDatabaseMigrator>();
         services.AddSingleton<IEventRepository, SqliteEventRepository>();
+        services.AddSingleton<ICategoryRepository, SqliteCategoryRepository>();
+        services.AddSingleton<IEventTemplateRepository, SqliteEventTemplateRepository>();
+        services.AddSingleton<ISettingsRepository, SqliteSettingsRepository>();
         return services;
     }
 }

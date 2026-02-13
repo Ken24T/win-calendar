@@ -17,6 +17,9 @@ public partial class App : System.Windows.Application
 
 	public App()
 	{
+		RegisterGlobalExceptionHandlers();
+		StartupDiagnostics.WriteInfo("App constructor started.");
+
 		_host = Host.CreateDefaultBuilder()
 			.ConfigureServices((context, services) =>
 			{
@@ -27,27 +30,89 @@ public partial class App : System.Windows.Application
 				services.AddSingleton<ViewModels.ShellViewModel>();
 			})
 			.Build();
+
+		StartupDiagnostics.WriteInfo("Host built successfully.");
 	}
 
 	protected override async void OnStartup(StartupEventArgs e)
 	{
-		await _host.StartAsync();
+		try
+		{
+			StartupDiagnostics.WriteInfo("OnStartup begin.");
+			await _host.StartAsync();
+			StartupDiagnostics.WriteInfo("Host started.");
 
-		var databaseMigrator = _host.Services.GetRequiredService<IDatabaseMigrator>();
-		await databaseMigrator.MigrateAsync();
+			var databaseMigrator = _host.Services.GetRequiredService<IDatabaseMigrator>();
+			await databaseMigrator.MigrateAsync();
+			StartupDiagnostics.WriteInfo("Database migration completed.");
 
-		var mainWindow = _host.Services.GetRequiredService<MainWindow>();
-		mainWindow.DataContext = _host.Services.GetRequiredService<ViewModels.ShellViewModel>();
-		mainWindow.Show();
+			var mainWindow = _host.Services.GetRequiredService<MainWindow>();
+			mainWindow.DataContext = _host.Services.GetRequiredService<ViewModels.ShellViewModel>();
+			mainWindow.Show();
+			StartupDiagnostics.WriteInfo("Main window shown.");
 
-		base.OnStartup(e);
+			base.OnStartup(e);
+		}
+		catch (Exception exception)
+		{
+			StartupDiagnostics.WriteError("Fatal startup exception.", exception);
+			MessageBox.Show(
+				$"WinCalendar failed to start.\n\n{exception.Message}\n\nDiagnostics log:\n{StartupDiagnostics.LogPath}",
+				"WinCalendar Startup Error",
+				MessageBoxButton.OK,
+				MessageBoxImage.Error);
+
+			Shutdown(-1);
+		}
 	}
 
 	protected override async void OnExit(ExitEventArgs e)
 	{
-		await _host.StopAsync();
-		_host.Dispose();
+		try
+		{
+			StartupDiagnostics.WriteInfo("OnExit begin.");
+			await _host.StopAsync();
+			_host.Dispose();
+			StartupDiagnostics.WriteInfo("Host stopped and disposed.");
+		}
+		catch (Exception exception)
+		{
+			StartupDiagnostics.WriteError("Exception during OnExit.", exception);
+		}
+
 		base.OnExit(e);
+	}
+
+	private void RegisterGlobalExceptionHandlers()
+	{
+		DispatcherUnhandledException += (_, args) =>
+		{
+			StartupDiagnostics.WriteError("Dispatcher unhandled exception.", args.Exception);
+			MessageBox.Show(
+				$"Unexpected UI error:\n\n{args.Exception.Message}\n\nDiagnostics log:\n{StartupDiagnostics.LogPath}",
+				"WinCalendar Error",
+				MessageBoxButton.OK,
+				MessageBoxImage.Error);
+			args.Handled = true;
+		};
+
+		AppDomain.CurrentDomain.UnhandledException += (_, args) =>
+		{
+			if (args.ExceptionObject is Exception exception)
+			{
+				StartupDiagnostics.WriteError("AppDomain unhandled exception.", exception);
+			}
+			else
+			{
+				StartupDiagnostics.WriteInfo($"AppDomain unhandled non-exception object: {args.ExceptionObject}");
+			}
+		};
+
+		TaskScheduler.UnobservedTaskException += (_, args) =>
+		{
+			StartupDiagnostics.WriteError("Unobserved task exception.", args.Exception);
+			args.SetObserved();
+		};
 	}
 }
 

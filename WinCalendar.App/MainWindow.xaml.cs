@@ -16,11 +16,26 @@ public partial class MainWindow : Window
 
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
-        if (DataContext is not ShellViewModel shellViewModel)
+        try
         {
-            return;
-        }
+            if (DataContext is not ShellViewModel shellViewModel)
+            {
+                StartupDiagnostics.WriteInfo("MainWindow loaded without ShellViewModel DataContext.");
+                return;
+            }
 
-        await shellViewModel.InitialiseAsync();
+            StartupDiagnostics.WriteInfo("MainWindow loaded. Initialising ShellViewModel.");
+            await shellViewModel.InitialiseAsync();
+            StartupDiagnostics.WriteInfo("ShellViewModel initialised.");
+        }
+        catch (Exception exception)
+        {
+            StartupDiagnostics.WriteError("MainWindow OnLoaded exception.", exception);
+            MessageBox.Show(
+                $"Failed to initialise the calendar view.\n\n{exception.Message}\n\nDiagnostics log:\n{StartupDiagnostics.LogPath}",
+                "WinCalendar Initialisation Error",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
     }
 }

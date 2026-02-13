@@ -19,8 +19,8 @@
         <DataGrid Grid.Row="1" ItemsSource="{Binding Results}" IsReadOnly="True" AutoGenerateColumns="False" CanUserAddRows="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Title" Binding="{Binding Title}" Width="2*" />
-                <DataGridTextColumn Header="Start" Binding="{Binding StartDateTime}" Width="2*" />
-                <DataGridTextColumn Header="End" Binding="{Binding EndDateTime}" Width="2*" />
+                <DataGridTextColumn Header="Start" Binding="{Binding StartDisplayLabel}" Width="2*" />
+                <DataGridTextColumn Header="End" Binding="{Binding EndDisplayLabel}" Width="2*" />
                 <DataGridTextColumn Header="Category" Binding="{Binding Category}" Width="*" />
                 <DataGridTemplateColumn Header="" Width="90">
                     <DataGridTemplateColumn.CellTemplate>

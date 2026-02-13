@@ -1,0 +1,64 @@
+<Window x:Class="WinCalendar.App.Views.Dialogs.EventEditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Event"
+        Height="520"
+        Width="560"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="160" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,4" Text="Title" />
+            <TextBox Grid.Row="0" Grid.Column="1" Margin="0,0,0,8" Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" />
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,4" Text="Start" />
+            <DatePicker Grid.Row="1" Grid.Column="1" Margin="0,0,0,8" SelectedDate="{Binding StartDateTime}" />
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,4" Text="End" />
+            <DatePicker Grid.Row="2" Grid.Column="1" Margin="0,0,0,8" SelectedDate="{Binding EndDateTime}" />
+
+            <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,4" Text="Category" />
+            <ComboBox Grid.Row="3" Grid.Column="1"
+                      Margin="0,0,0,8"
+                      IsEditable="True"
+                      ItemsSource="{Binding Categories}"
+                      Text="{Binding Category, UpdateSourceTrigger=PropertyChanged}" />
+
+            <TextBlock Grid.Row="4" Grid.Column="0" Margin="0,4" Text="Location" />
+            <TextBox Grid.Row="4" Grid.Column="1" Margin="0,0,0,8" Text="{Binding Location, UpdateSourceTrigger=PropertyChanged}" />
+
+            <TextBlock Grid.Row="5" Grid.Column="0" Margin="0,4" Text="Recurrence" />
+            <TextBox Grid.Row="5" Grid.Column="1" Margin="0,0,0,8" Text="{Binding RecurrenceRule, UpdateSourceTrigger=PropertyChanged}" />
+
+            <CheckBox Grid.Row="6" Grid.Column="1" Margin="0,0,0,8" Content="All day" IsChecked="{Binding IsAllDay}" />
+
+            <TextBlock Grid.Row="7" Grid.Column="0" Margin="0,4" Text="Notes" />
+            <TextBox Grid.Row="7" Grid.Column="1" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}" />
+        </Grid>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+            <Button Width="100" Margin="0,0,8,0" Content="Cancel" Command="{Binding CancelCommand}" />
+            <Button Width="100" Content="Save" Command="{Binding SaveCommand}" />
+        </StackPanel>
+    </Grid>
+</Window>

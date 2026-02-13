@@ -1,0 +1,27 @@
+<Window x:Class="WinCalendar.App.Views.Dialogs.CategoryManagerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Categories"
+        Height="460"
+        Width="520"
+        WindowStartupLocation="CenterOwner">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+            <TextBox Width="180" Margin="0,0,8,0" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox Width="120" Margin="0,0,8,0" Text="{Binding ColourHex, UpdateSourceTrigger=PropertyChanged}" />
+            <Button Width="90" Content="Add" Command="{Binding AddCategoryCommand}" />
+        </StackPanel>
+
+        <DataGrid Grid.Row="1" ItemsSource="{Binding Categories}" IsReadOnly="True" AutoGenerateColumns="False" CanUserAddRows="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="2*" />
+                <DataGridTextColumn Header="Colour" Binding="{Binding ColourHex}" Width="*" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>

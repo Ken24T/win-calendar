@@ -1,16 +1,33 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using WinCalendar.Application.Contracts;
 using WinCalendar.App.ViewModels.Calendar;
+using WinCalendar.Application.Contracts;
 using WinCalendar.Domain.Entities;
 using WinCalendar.Domain.Enums;
 
 namespace WinCalendar.App.ViewModels;
 
-public partial class ShellViewModel(IEventService eventService) : ObservableObject
+public partial class ShellViewModel : ObservableObject
 {
+    private readonly IEventService _eventService;
+    private readonly IEventSearchService _eventSearchService;
+    private readonly ICategoryService _categoryService;
+    private readonly IEventTemplateService _eventTemplateService;
+
     private IReadOnlyList<CalendarEvent> _allEvents = [];
+
+    public ShellViewModel(
+        IEventService eventService,
+        IEventSearchService eventSearchService,
+        ICategoryService categoryService,
+        IEventTemplateService eventTemplateService)
+    {
+        _eventService = eventService;
+        _eventSearchService = eventSearchService;
+        _categoryService = categoryService;
+        _eventTemplateService = eventTemplateService;
+    }
 
     [ObservableProperty]
     private string _title = "WinCalendar";
@@ -95,7 +112,7 @@ public partial class ShellViewModel(IEventService eventService) : ObservableObje
     [RelayCommand]
     private async Task RefreshViewAsync()
     {
-        _allEvents = await eventService.GetEventsAsync();
+        _allEvents = await _eventService.GetEventsAsync();
 
         BuildDayEvents();
         BuildWeekColumns();
@@ -108,7 +125,7 @@ public partial class ShellViewModel(IEventService eventService) : ObservableObje
     [RelayCommand]
     private async Task LoadSampleEventsAsync()
     {
-        await eventService.SeedSampleEventsAsync();
+        await _eventService.SeedSampleEventsAsync();
         await RefreshViewAsync();
     }
 

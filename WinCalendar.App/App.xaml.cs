@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using WinCalendar.Application;
 using WinCalendar.Infrastructure;
 using WinCalendar.Infrastructure.Persistence;
+using WinCalendar.Import;
 
 namespace WinCalendar.App;
 
@@ -21,6 +22,7 @@ public partial class App : System.Windows.Application
 			{
 				services.AddApplication();
 				services.AddInfrastructure();
+				services.AddRustImport();
 				services.AddSingleton<MainWindow>();
 				services.AddSingleton<ViewModels.ShellViewModel>();
 			})

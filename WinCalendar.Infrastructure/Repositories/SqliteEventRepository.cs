@@ -15,13 +15,13 @@ internal sealed class SqliteEventRepository(SqliteConnectionFactory connectionFa
             SELECT
                 id,
                 title,
-                start_datetime,
-                end_datetime,
-                is_all_day,
+                start_datetime AS StartDateTime,
+                end_datetime AS EndDateTime,
+                is_all_day AS IsAllDay,
                 category,
                 location,
                 notes,
-                recurrence_rule
+                recurrence_rule AS RecurrenceRule
             FROM events
             ORDER BY start_datetime;
             """;
@@ -117,22 +117,22 @@ internal sealed class SqliteEventRepository(SqliteConnectionFactory connectionFa
 
     private sealed class EventRow
     {
-        public string Id { get; init; } = string.Empty;
+        public string Id { get; set; } = string.Empty;
 
-        public string Title { get; init; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
 
-        public string StartDateTime { get; init; } = string.Empty;
+        public string StartDateTime { get; set; } = string.Empty;
 
-        public string EndDateTime { get; init; } = string.Empty;
+        public string EndDateTime { get; set; } = string.Empty;
 
-        public long IsAllDay { get; init; }
+        public long IsAllDay { get; set; }
 
-        public string Category { get; init; } = string.Empty;
+        public string Category { get; set; } = string.Empty;
 
-        public string? Location { get; init; }
+        public string? Location { get; set; }
 
-        public string? Notes { get; init; }
+        public string? Notes { get; set; }
 
-        public string? RecurrenceRule { get; init; }
+        public string? RecurrenceRule { get; set; }
     }
 }

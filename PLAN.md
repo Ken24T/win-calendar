@@ -28,11 +28,11 @@ Replicate functional behaviour from `D:/Development/Repos/rust-calendar` in a Wi
 - [x] Add migration strategy for schema evolution
 - [x] Replace in-memory repositories with SQLite-backed repositories
 
-#### 3. Rust database import (next)
-- [ ] Create deterministic importer from Rust SQLite to new schema
-- [ ] Preserve RFC3339 datetime semantics
-- [ ] Preserve recurrence exception semantics (JSON lists)
-- [ ] Add importer validation report (counts + conversion summary)
+#### 3. Rust database import (completed)
+- [x] Create deterministic importer from Rust SQLite to new schema
+- [x] Preserve RFC3339 datetime semantics
+- [x] Preserve recurrence exception semantics (JSON lists)
+- [x] Add importer validation report (counts + conversion summary)
 
 #### 4. Core service parity
 - [ ] Event CRUD and range queries

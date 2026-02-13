@@ -3,6 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\WinCalendar.Application\WinCalendar.Application.csproj" />
     <ProjectReference Include="..\WinCalendar.Infrastructure\WinCalendar.Infrastructure.csproj" />
+    <ProjectReference Include="..\WinCalendar.Import\WinCalendar.Import.csproj" />
   </ItemGroup>
 
   <ItemGroup>

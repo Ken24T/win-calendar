@@ -18,30 +18,54 @@ internal sealed class RecurrenceService : IRecurrenceService
 
         if (string.IsNullOrWhiteSpace(calendarEvent.RecurrenceRule))
         {
-            return IsInRange(calendarEvent.StartDateTime, rangeStart, rangeEnd)
+            IReadOnlyList<DateTimeOffset> single = IsInRange(calendarEvent.StartDateTime, rangeStart, rangeEnd)
                 ? [calendarEvent.StartDateTime]
                 : [];
+
+            return FilterExceptions(single, calendarEvent.RecurrenceExceptions);
         }
 
         var rule = ParseRule(calendarEvent.RecurrenceRule);
         if (!rule.TryGetValue("FREQ", out var frequency))
         {
-            return IsInRange(calendarEvent.StartDateTime, rangeStart, rangeEnd)
+            IReadOnlyList<DateTimeOffset> single = IsInRange(calendarEvent.StartDateTime, rangeStart, rangeEnd)
                 ? [calendarEvent.StartDateTime]
                 : [];
+
+            return FilterExceptions(single, calendarEvent.RecurrenceExceptions);
         }
 
         var countLimit = ParseInt(rule, "COUNT");
         var until = ParseDate(rule, "UNTIL");
         var interval = Math.Max(ParseInt(rule, "INTERVAL") ?? 1, 1);
 
-        return frequency.ToUpperInvariant() switch
+        var expanded = frequency.ToUpperInvariant() switch
         {
             "WEEKLY" => ExpandWeekly(calendarEvent.StartDateTime, rangeStart, rangeEnd, interval, countLimit, until, rule, maxOccurrences),
             "MONTHLY" => ExpandFixedStep(calendarEvent.StartDateTime, rangeStart, rangeEnd, countLimit, until, maxOccurrences, value => value.AddMonths(interval)),
             "YEARLY" => ExpandFixedStep(calendarEvent.StartDateTime, rangeStart, rangeEnd, countLimit, until, maxOccurrences, value => value.AddYears(interval)),
             _ => ExpandFixedStep(calendarEvent.StartDateTime, rangeStart, rangeEnd, countLimit, until, maxOccurrences, value => value.AddDays(interval))
         };
+
+        return FilterExceptions(expanded, calendarEvent.RecurrenceExceptions);
+    }
+
+    private static IReadOnlyList<DateTimeOffset> FilterExceptions(
+        IReadOnlyList<DateTimeOffset> occurrences,
+        IReadOnlyList<DateTimeOffset> recurrenceExceptions)
+    {
+        if (occurrences.Count == 0 || recurrenceExceptions.Count == 0)
+        {
+            return occurrences;
+        }
+
+        var filtered = occurrences
+            .Where(occurrence => !recurrenceExceptions.Any(exception =>
+                exception.UtcDateTime == occurrence.UtcDateTime ||
+                exception.Date == occurrence.Date))
+            .ToList();
+
+        return filtered;
     }
 
     private static IReadOnlyList<DateTimeOffset> ExpandFixedStep(

@@ -36,6 +36,35 @@ public class CoreServicesTests
     }
 
     [Fact]
+    public void RecurrenceService_Should_Exclude_Exception_Dates()
+    {
+        var services = new ServiceCollection();
+        services.AddApplication();
+        using var provider = services.BuildServiceProvider();
+        var service = provider.GetRequiredService<IRecurrenceService>();
+
+        var start = new DateTimeOffset(2026, 2, 14, 9, 0, 0, TimeSpan.FromHours(10));
+
+        var calendarEvent = new CalendarEvent
+        {
+            Id = Guid.NewGuid(),
+            Title = "Daily stand-up",
+            StartDateTime = start,
+            EndDateTime = start.AddMinutes(30),
+            RecurrenceRule = "FREQ=DAILY;COUNT=3",
+            RecurrenceExceptions = [start.AddDays(1)]
+        };
+
+        var occurrences = service.ExpandOccurrences(
+            calendarEvent,
+            start.AddDays(-1),
+            start.AddDays(10));
+
+        Assert.Equal(2, occurrences.Count);
+        Assert.DoesNotContain(start.AddDays(1), occurrences);
+    }
+
+    [Fact]
     public async Task EventSearchService_Should_Filter_By_Title_And_Category()
     {
         var repository = new FakeEventRepository(

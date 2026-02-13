@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using WinCalendar.Application.Contracts;
@@ -45,6 +46,9 @@ public partial class EventEditorViewModel : ObservableObject, IDialogRequestClos
     private string? _recurrenceRule;
 
     [ObservableProperty]
+    private string _recurrenceExceptionsText = string.Empty;
+
+    [ObservableProperty]
     private bool _canDelete;
 
     public ObservableCollection<string> Categories { get; } = [];
@@ -62,6 +66,7 @@ public partial class EventEditorViewModel : ObservableObject, IDialogRequestClos
         Location = null;
         Notes = null;
         RecurrenceRule = null;
+        RecurrenceExceptionsText = string.Empty;
 
         await LoadCategoriesAsync();
     }
@@ -79,6 +84,7 @@ public partial class EventEditorViewModel : ObservableObject, IDialogRequestClos
         Location = calendarEvent.Location;
         Notes = calendarEvent.Notes;
         RecurrenceRule = calendarEvent.RecurrenceRule;
+        RecurrenceExceptionsText = FormatRecurrenceExceptions(calendarEvent.RecurrenceExceptions);
 
         await LoadCategoriesAsync();
     }
@@ -111,7 +117,8 @@ public partial class EventEditorViewModel : ObservableObject, IDialogRequestClos
             Category = string.IsNullOrWhiteSpace(Category) ? "General" : Category.Trim(),
             Location = string.IsNullOrWhiteSpace(Location) ? null : Location.Trim(),
             Notes = string.IsNullOrWhiteSpace(Notes) ? null : Notes.Trim(),
-            RecurrenceRule = string.IsNullOrWhiteSpace(RecurrenceRule) ? null : RecurrenceRule.Trim()
+            RecurrenceRule = string.IsNullOrWhiteSpace(RecurrenceRule) ? null : RecurrenceRule.Trim(),
+            RecurrenceExceptions = ParseRecurrenceExceptions(RecurrenceExceptionsText)
         });
 
         RequestClose?.Invoke(this, true);
@@ -133,5 +140,56 @@ public partial class EventEditorViewModel : ObservableObject, IDialogRequestClos
 
         await _eventService.DeleteEventAsync(_eventId);
         RequestClose?.Invoke(this, true);
+    }
+
+    private IReadOnlyList<DateTimeOffset> ParseRecurrenceExceptions(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return [];
+        }
+
+        var lines = value
+            .Split(['\r', '\n', ',', ';'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        var timeOfDay = TimeOnly.FromDateTime(StartDateTime.DateTime);
+        var items = new List<DateTimeOffset>();
+
+        foreach (var line in lines)
+        {
+            if (DateTimeOffset.TryParse(line, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var dateTimeOffset))
+            {
+                items.Add(dateTimeOffset);
+                continue;
+            }
+
+            if (DateOnly.TryParse(line, CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateOnly))
+            {
+                var localDateTime = dateOnly.ToDateTime(timeOfDay, DateTimeKind.Unspecified);
+                items.Add(new DateTimeOffset(localDateTime, StartDateTime.Offset));
+            }
+        }
+
+        return items
+            .Distinct()
+            .OrderBy(item => item)
+            .ToList();
+    }
+
+    private static string FormatRecurrenceExceptions(IReadOnlyList<DateTimeOffset> recurrenceExceptions)
+    {
+        if (recurrenceExceptions.Count == 0)
+        {
+            return string.Empty;
+        }
+
+        return string.Join(
+            Environment.NewLine,
+            recurrenceExceptions
+                .OrderBy(item => item)
+                .Select(item => item.ToString("yyyy-MM-dd"))
+                .Distinct(StringComparer.Ordinal));
     }
 }

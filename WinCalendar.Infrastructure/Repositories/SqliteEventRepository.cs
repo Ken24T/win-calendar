@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Text.Json;
 using Dapper;
 using WinCalendar.Application.Abstractions;
 using WinCalendar.Domain.Entities;
@@ -21,7 +22,8 @@ internal sealed class SqliteEventRepository(SqliteConnectionFactory connectionFa
                 category,
                 location,
                 notes,
-                recurrence_rule AS RecurrenceRule
+                recurrence_rule AS RecurrenceRule,
+                recurrence_exceptions AS RecurrenceExceptions
             FROM events
             ORDER BY start_datetime;
             """;
@@ -53,7 +55,8 @@ internal sealed class SqliteEventRepository(SqliteConnectionFactory connectionFa
                 category,
                 location,
                 notes,
-                recurrence_rule AS RecurrenceRule
+                                recurrence_rule AS RecurrenceRule,
+                                recurrence_exceptions AS RecurrenceExceptions
             FROM events
             WHERE start_datetime <= @RangeEnd
               AND end_datetime >= @RangeStart
@@ -136,7 +139,7 @@ internal sealed class SqliteEventRepository(SqliteConnectionFactory connectionFa
                     calendarEvent.Location,
                     calendarEvent.Notes,
                     calendarEvent.RecurrenceRule,
-                    RecurrenceExceptions = "[]",
+                    RecurrenceExceptions = SerializeRecurrenceExceptions(calendarEvent.RecurrenceExceptions),
                     CreatedUtc = now,
                     UpdatedUtc = now
                 },
@@ -168,8 +171,47 @@ internal sealed class SqliteEventRepository(SqliteConnectionFactory connectionFa
             Category = row.Category,
             Location = row.Location,
             Notes = row.Notes,
-            RecurrenceRule = row.RecurrenceRule
+            RecurrenceRule = row.RecurrenceRule,
+            RecurrenceExceptions = ParseRecurrenceExceptions(row.RecurrenceExceptions)
         };
+    }
+
+    private static IReadOnlyList<DateTimeOffset> ParseRecurrenceExceptions(string? json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            return [];
+        }
+
+        try
+        {
+            var items = JsonSerializer.Deserialize<List<string>>(json) ?? [];
+            return items
+                .Select(item => DateTimeOffset.TryParse(item, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var parsed)
+                    ? parsed
+                    : (DateTimeOffset?)null)
+                .Where(item => item.HasValue)
+                .Select(item => item!.Value)
+                .ToList();
+        }
+        catch
+        {
+            return [];
+        }
+    }
+
+    private static string SerializeRecurrenceExceptions(IReadOnlyList<DateTimeOffset> recurrenceExceptions)
+    {
+        if (recurrenceExceptions.Count == 0)
+        {
+            return "[]";
+        }
+
+        var values = recurrenceExceptions
+            .Select(item => item.ToString("O"))
+            .ToList();
+
+        return JsonSerializer.Serialize(values);
     }
 
     private sealed class EventRow
@@ -191,5 +233,7 @@ internal sealed class SqliteEventRepository(SqliteConnectionFactory connectionFa
         public string? Notes { get; set; }
 
         public string? RecurrenceRule { get; set; }
+
+        public string? RecurrenceExceptions { get; set; }
     }
 }

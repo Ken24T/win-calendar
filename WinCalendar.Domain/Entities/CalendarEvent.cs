@@ -19,4 +19,6 @@ public sealed class CalendarEvent
     public string? Notes { get; init; }
 
     public string? RecurrenceRule { get; init; }
+
+    public IReadOnlyList<DateTimeOffset> RecurrenceExceptions { get; init; } = [];
 }

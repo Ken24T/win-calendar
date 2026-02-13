@@ -75,6 +75,7 @@ public partial class EventEditorViewModel : ObservableObject, IDialogRequestClos
         RecurrenceExceptionsText = string.Empty;
         StartTimeText = StartDateTime.ToString("HH:mm");
         EndTimeText = EndDateTime.ToString("HH:mm");
+        InitialiseRecurrenceBuilderFromRule();
 
         await LoadCategoriesAsync();
     }
@@ -96,6 +97,7 @@ public partial class EventEditorViewModel : ObservableObject, IDialogRequestClos
         RecurrenceExceptionsText = string.Empty;
         StartTimeText = StartDateTime.ToString("HH:mm");
         EndTimeText = EndDateTime.ToString("HH:mm");
+        InitialiseRecurrenceBuilderFromRule();
 
         await LoadCategoriesAsync();
     }
@@ -116,6 +118,7 @@ public partial class EventEditorViewModel : ObservableObject, IDialogRequestClos
         RecurrenceExceptionsText = FormatRecurrenceExceptions(calendarEvent.RecurrenceExceptions);
         StartTimeText = StartDateTime.ToString("HH:mm");
         EndTimeText = EndDateTime.ToString("HH:mm");
+        InitialiseRecurrenceBuilderFromRule();
 
         await LoadCategoriesAsync();
     }
@@ -133,6 +136,8 @@ public partial class EventEditorViewModel : ObservableObject, IDialogRequestClos
     [RelayCommand]
     private async Task SaveAsync()
     {
+        ApplyRecurrenceBuilderIfActive();
+
         if (string.IsNullOrWhiteSpace(Title))
         {
             return;

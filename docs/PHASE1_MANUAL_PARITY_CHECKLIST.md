@@ -22,7 +22,7 @@ Last updated: 2026-02-14
 
 - [x] Exact date/time formatting parity across all views
 - [x] All-day multi-day event rendering behaviour in month and week views
-- [ ] Recurrence edge cases (BYDAY/BYMONTHDAY combinations) in UI workflows
+- [x] Recurrence edge cases (BYDAY/BYMONTHDAY combinations) in UI workflows
 - [x] Empty-state messaging and loading/error state wording parity
 
 ## Notes

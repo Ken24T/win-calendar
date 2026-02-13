@@ -65,6 +65,37 @@ public class CoreServicesTests
     }
 
     [Fact]
+    public void RecurrenceService_Should_Expand_Monthly_ByMonthDay_Rule()
+    {
+        var services = new ServiceCollection();
+        services.AddApplication();
+        using var provider = services.BuildServiceProvider();
+        var service = provider.GetRequiredService<IRecurrenceService>();
+
+        var start = new DateTimeOffset(2026, 1, 10, 9, 0, 0, TimeSpan.FromHours(10));
+
+        var calendarEvent = new CalendarEvent
+        {
+            Id = Guid.NewGuid(),
+            Title = "Billing",
+            StartDateTime = start,
+            EndDateTime = start.AddMinutes(15),
+            RecurrenceRule = "FREQ=MONTHLY;COUNT=4;BYMONTHDAY=10,20"
+        };
+
+        var occurrences = service.ExpandOccurrences(
+            calendarEvent,
+            new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.FromHours(10)),
+            new DateTimeOffset(2026, 3, 31, 23, 59, 0, TimeSpan.FromHours(10)));
+
+        Assert.Equal(4, occurrences.Count);
+        Assert.Equal(new DateTimeOffset(2026, 1, 10, 9, 0, 0, TimeSpan.FromHours(10)), occurrences[0]);
+        Assert.Equal(new DateTimeOffset(2026, 1, 20, 9, 0, 0, TimeSpan.FromHours(10)), occurrences[1]);
+        Assert.Equal(new DateTimeOffset(2026, 2, 10, 9, 0, 0, TimeSpan.FromHours(10)), occurrences[2]);
+        Assert.Equal(new DateTimeOffset(2026, 2, 20, 9, 0, 0, TimeSpan.FromHours(10)), occurrences[3]);
+    }
+
+    [Fact]
     public async Task EventSearchService_Should_Filter_By_Title_And_Category()
     {
         var repository = new FakeEventRepository(

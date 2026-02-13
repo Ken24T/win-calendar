@@ -42,7 +42,7 @@ internal sealed class RecurrenceService : IRecurrenceService
         var expanded = frequency.ToUpperInvariant() switch
         {
             "WEEKLY" => ExpandWeekly(calendarEvent.StartDateTime, rangeStart, rangeEnd, interval, countLimit, until, rule, maxOccurrences),
-            "MONTHLY" => ExpandFixedStep(calendarEvent.StartDateTime, rangeStart, rangeEnd, countLimit, until, maxOccurrences, value => value.AddMonths(interval)),
+            "MONTHLY" => ExpandMonthly(calendarEvent.StartDateTime, rangeStart, rangeEnd, interval, countLimit, until, rule, maxOccurrences),
             "YEARLY" => ExpandFixedStep(calendarEvent.StartDateTime, rangeStart, rangeEnd, countLimit, until, maxOccurrences, value => value.AddYears(interval)),
             _ => ExpandFixedStep(calendarEvent.StartDateTime, rangeStart, rangeEnd, countLimit, until, maxOccurrences, value => value.AddDays(interval))
         };
@@ -169,6 +169,80 @@ internal sealed class RecurrenceService : IRecurrenceService
         return results;
     }
 
+    private static IReadOnlyList<DateTimeOffset> ExpandMonthly(
+        DateTimeOffset start,
+        DateTimeOffset rangeStart,
+        DateTimeOffset rangeEnd,
+        int interval,
+        int? countLimit,
+        DateTimeOffset? until,
+        IReadOnlyDictionary<string, string> rule,
+        int maxOccurrences)
+    {
+        var byMonthDays = ParseByMonthDay(rule);
+        if (byMonthDays.Count == 0)
+        {
+            return ExpandFixedStep(start, rangeStart, rangeEnd, countLimit, until, maxOccurrences, value => value.AddMonths(interval));
+        }
+
+        var results = new List<DateTimeOffset>();
+        var produced = 0;
+        var monthCursor = new DateTimeOffset(start.Year, start.Month, 1, start.Hour, start.Minute, start.Second, start.Offset);
+
+        while (results.Count < maxOccurrences)
+        {
+            var daysInMonth = DateTime.DaysInMonth(monthCursor.Year, monthCursor.Month);
+
+            foreach (var day in byMonthDays)
+            {
+                if (day > daysInMonth)
+                {
+                    continue;
+                }
+
+                var occurrence = new DateTimeOffset(
+                    monthCursor.Year,
+                    monthCursor.Month,
+                    day,
+                    start.Hour,
+                    start.Minute,
+                    start.Second,
+                    start.Offset);
+
+                if (occurrence < start)
+                {
+                    continue;
+                }
+
+                if (countLimit.HasValue && produced >= countLimit.Value)
+                {
+                    return results;
+                }
+
+                if (until.HasValue && occurrence > until.Value)
+                {
+                    return results;
+                }
+
+                if (occurrence > rangeEnd)
+                {
+                    return results;
+                }
+
+                if (IsInRange(occurrence, rangeStart, rangeEnd))
+                {
+                    results.Add(occurrence);
+                }
+
+                produced++;
+            }
+
+            monthCursor = monthCursor.AddMonths(interval);
+        }
+
+        return results;
+    }
+
     private static DateTimeOffset AlignToDay(DateTimeOffset anchor, DayOfWeek day)
     {
         var offset = ((int)day - (int)anchor.DayOfWeek + 7) % 7;
@@ -240,6 +314,24 @@ internal sealed class RecurrenceService : IRecurrenceService
         }
 
         return list;
+    }
+
+    private static List<int> ParseByMonthDay(IReadOnlyDictionary<string, string> rule)
+    {
+        if (!rule.TryGetValue("BYMONTHDAY", out var byMonthDay))
+        {
+            return [];
+        }
+
+        var values = byMonthDay
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(token => int.TryParse(token, out var day) ? day : 0)
+            .Where(day => day is >= 1 and <= 31)
+            .Distinct()
+            .OrderBy(day => day)
+            .ToList();
+
+        return values;
     }
 
     private static bool IsInRange(DateTimeOffset value, DateTimeOffset rangeStart, DateTimeOffset rangeEnd)

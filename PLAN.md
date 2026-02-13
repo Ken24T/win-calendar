@@ -55,12 +55,14 @@ Replicate functional behaviour from `D:/Development/Repos/rust-calendar` in a Wi
 - [x] Recurrence exceptions editing flow
 - [x] Month date click to create event
 - [x] Explicit start/end time editing support
+- [x] Recurrence edge-case builder workflow (BYDAY/BYMONTHDAY)
+- [x] Loading/empty/error state messaging
 
 #### 6. Verification for phase 1
 
 - [x] Unit/integration tests for services and recurrence
 - [ ] Import fixtures and conversion tests
-- [ ] Manual parity checklist against Rust app (in progress; see `docs/PHASE1_MANUAL_PARITY_CHECKLIST.md`)
+- [x] Manual parity checklist against Rust app (see `docs/PHASE1_MANUAL_PARITY_CHECKLIST.md`)
 
 ### Phase 2 — Extended parity
 

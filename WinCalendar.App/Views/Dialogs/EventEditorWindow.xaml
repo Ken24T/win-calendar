@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:converters="clr-namespace:WinCalendar.App.Converters"
         Title="Event"
-        Height="620"
+        Height="760"
         Width="560"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize">
@@ -24,6 +24,7 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -69,13 +70,44 @@
             <TextBox Grid.Row="4" Grid.Column="1" Margin="0,0,0,8" Text="{Binding Location, UpdateSourceTrigger=PropertyChanged}" />
 
             <TextBlock Grid.Row="5" Grid.Column="0" Margin="0,4" Text="Recurrence" />
-            <TextBox Grid.Row="5" Grid.Column="1" Margin="0,0,0,8" Text="{Binding RecurrenceRule, UpdateSourceTrigger=PropertyChanged}" />
+            <StackPanel Grid.Row="5" Grid.Column="1" Margin="0,0,0,8">
+                <TextBox Margin="0,0,0,8" Text="{Binding RecurrenceRule, UpdateSourceTrigger=PropertyChanged}" />
 
-            <CheckBox Grid.Row="6" Grid.Column="1" Margin="0,0,0,8" Content="All day" IsChecked="{Binding IsAllDay}" />
-            <TextBlock Grid.Row="6" Grid.Column="1" Margin="90,4,0,0" FontSize="11" Foreground="DimGray" Text="Time format: HH:mm (24-hour)." />
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                    <ComboBox Width="110"
+                              ItemsSource="{Binding RecurrenceFrequencyOptions}"
+                              SelectedItem="{Binding RecurrenceFrequency, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBox Width="60" Margin="8,0,0,0" Text="{Binding RecurrenceIntervalText, UpdateSourceTrigger=PropertyChanged}" ToolTip="Interval" />
+                    <TextBox Width="70" Margin="8,0,0,0" Text="{Binding RecurrenceCountText, UpdateSourceTrigger=PropertyChanged}" ToolTip="Count" />
+                    <DatePicker Width="130" Margin="8,0,0,0" SelectedDate="{Binding RecurrenceUntilDate, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
 
-            <TextBlock Grid.Row="7" Grid.Column="0" Margin="0,4" Text="Exceptions" />
-            <StackPanel Grid.Row="7" Grid.Column="1" Margin="0,0,0,8">
+                <WrapPanel Margin="0,0,0,6" Visibility="{Binding ShowWeeklyBuilder, Converter={StaticResource BoolToVis}}">
+                    <CheckBox Content="Mon" Margin="0,0,8,0" IsChecked="{Binding ByMonday}" />
+                    <CheckBox Content="Tue" Margin="0,0,8,0" IsChecked="{Binding ByTuesday}" />
+                    <CheckBox Content="Wed" Margin="0,0,8,0" IsChecked="{Binding ByWednesday}" />
+                    <CheckBox Content="Thu" Margin="0,0,8,0" IsChecked="{Binding ByThursday}" />
+                    <CheckBox Content="Fri" Margin="0,0,8,0" IsChecked="{Binding ByFriday}" />
+                    <CheckBox Content="Sat" Margin="0,0,8,0" IsChecked="{Binding BySaturday}" />
+                    <CheckBox Content="Sun" Margin="0,0,8,0" IsChecked="{Binding BySunday}" />
+                </WrapPanel>
+
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,6" Visibility="{Binding ShowMonthlyBuilder, Converter={StaticResource BoolToVis}}">
+                    <TextBlock VerticalAlignment="Center" Text="Month days" />
+                    <TextBox Width="200" Margin="8,0,0,0" Text="{Binding RecurrenceMonthDaysText, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal">
+                    <Button Width="110" Content="Apply Rule" Command="{Binding ApplyRecurrenceBuilderCommand}" />
+                    <Button Width="110" Margin="8,0,0,0" Content="Clear" Command="{Binding ClearRecurrenceBuilderCommand}" />
+                </StackPanel>
+            </StackPanel>
+
+            <CheckBox Grid.Row="7" Grid.Column="1" Margin="0,0,0,8" Content="All day" IsChecked="{Binding IsAllDay}" />
+            <TextBlock Grid.Row="7" Grid.Column="1" Margin="90,4,0,0" FontSize="11" Foreground="DimGray" Text="Time format: HH:mm (24-hour)." />
+
+            <TextBlock Grid.Row="8" Grid.Column="0" Margin="0,4" Text="Exceptions" />
+            <StackPanel Grid.Row="8" Grid.Column="1" Margin="0,0,0,8">
                 <TextBox Height="70"
                          AcceptsReturn="True"
                          VerticalScrollBarVisibility="Auto"
@@ -84,8 +116,8 @@
                 <TextBlock Margin="0,4,0,0" FontSize="11" Foreground="DimGray" Text="Use one date per line (YYYY-MM-DD)." />
             </StackPanel>
 
-            <TextBlock Grid.Row="8" Grid.Column="0" Margin="0,4" Text="Notes" />
-            <TextBox Grid.Row="8" Grid.Column="1" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBlock Grid.Row="9" Grid.Column="0" Margin="0,4" Text="Notes" />
+            <TextBox Grid.Row="9" Grid.Column="1" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}" />
         </Grid>
 
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">

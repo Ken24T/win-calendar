@@ -1,6 +1,7 @@
 <Window x:Class="WinCalendar.App.Views.Dialogs.EventEditorWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:converters="clr-namespace:WinCalendar.App.Converters"
         Title="Event"
         Height="620"
         Width="560"
@@ -8,6 +9,7 @@
         ResizeMode="NoResize">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
     </Window.Resources>
 
     <Grid Margin="16">
@@ -39,13 +41,21 @@
             <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,4" Text="Start" />
             <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Margin="0,0,0,8">
                 <DatePicker Width="220" SelectedDate="{Binding StartDateTime}" />
-                <TextBox Width="80" Margin="8,0,0,0" VerticalContentAlignment="Center" Text="{Binding StartTimeText, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBox Width="80"
+                         Margin="8,0,0,0"
+                         VerticalContentAlignment="Center"
+                         IsEnabled="{Binding IsAllDay, Converter={StaticResource InverseBooleanConverter}}"
+                         Text="{Binding StartTimeText, UpdateSourceTrigger=PropertyChanged}" />
             </StackPanel>
 
             <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,4" Text="End" />
             <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Margin="0,0,0,8">
                 <DatePicker Width="220" SelectedDate="{Binding EndDateTime}" />
-                <TextBox Width="80" Margin="8,0,0,0" VerticalContentAlignment="Center" Text="{Binding EndTimeText, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBox Width="80"
+                         Margin="8,0,0,0"
+                         VerticalContentAlignment="Center"
+                         IsEnabled="{Binding IsAllDay, Converter={StaticResource InverseBooleanConverter}}"
+                         Text="{Binding EndTimeText, UpdateSourceTrigger=PropertyChanged}" />
             </StackPanel>
 
             <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,4" Text="Category" />

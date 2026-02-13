@@ -34,7 +34,7 @@
                                                     CommandParameter="{Binding}" />
                                             <StackPanel>
                                                 <TextBlock FontWeight="SemiBold" Text="{Binding Title}" />
-                                                <TextBlock FontSize="11" Foreground="DimGray" Text="{Binding StartDateTime}" />
+                                                <TextBlock FontSize="11" Foreground="DimGray" Text="{Binding StartDateTime, StringFormat={}{0:ddd HH:mm}}" />
                                             </StackPanel>
                                         </DockPanel>
                                     </DataTemplate>

@@ -254,4 +254,24 @@ public partial class EventEditorViewModel : ObservableObject, IDialogRequestClos
         time = default;
         return false;
     }
+
+    partial void OnIsAllDayChanged(bool value)
+    {
+        if (value)
+        {
+            StartTimeText = "00:00";
+            EndTimeText = "23:59";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(StartTimeText))
+        {
+            StartTimeText = "09:00";
+        }
+
+        if (string.IsNullOrWhiteSpace(EndTimeText))
+        {
+            EndTimeText = "10:00";
+        }
+    }
 }

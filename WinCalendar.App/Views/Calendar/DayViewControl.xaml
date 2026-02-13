@@ -12,8 +12,8 @@
                   AutoGenerateColumns="False"
                   CanUserAddRows="False">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Start" Binding="{Binding StartDateTime}" Width="2*" />
-                <DataGridTextColumn Header="End" Binding="{Binding EndDateTime}" Width="2*" />
+                <DataGridTextColumn Header="Start" Binding="{Binding StartDateTime, StringFormat={}{0:dd MMM yyyy HH:mm}}" Width="2*" />
+                <DataGridTextColumn Header="End" Binding="{Binding EndDateTime, StringFormat={}{0:dd MMM yyyy HH:mm}}" Width="2*" />
                 <DataGridTextColumn Header="Title" Binding="{Binding Title}" Width="3*" />
                 <DataGridTextColumn Header="Category" Binding="{Binding Category}" Width="*" />
                 <DataGridTemplateColumn Header="" Width="100">

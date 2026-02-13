@@ -60,7 +60,7 @@ Replicate functional behaviour from `D:/Development/Repos/rust-calendar` in a Wi
 
 - [x] Unit/integration tests for services and recurrence
 - [ ] Import fixtures and conversion tests
-- [ ] Manual parity checklist against Rust app
+- [ ] Manual parity checklist against Rust app (in progress; see `docs/PHASE1_MANUAL_PARITY_CHECKLIST.md`)
 
 ### Phase 2 — Extended parity
 

@@ -1,0 +1,25 @@
+# Build output
+[Bb]in/
+[Oo]bj/
+
+# User-specific files
+*.user
+*.rsuser
+*.suo
+
+# Visual Studio cache
+.vs/
+
+# Test results
+[Tt]est[Rr]esult*/
+*.trx
+
+# Rider
+.idea/
+
+# Logs
+*.log
+
+# Publish output
+publish/
+artifacts/

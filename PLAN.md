@@ -16,7 +16,7 @@ Replicate functional behaviour from `D:/Development/Repos/rust-calendar` in a Wi
 - [x] Align release tag trigger with TCTBP tag format
 - [x] Add `.gitignore` and remove tracked build artefacts
 
-### Phase 1 — Core parity (current target)
+### Phase 1 — Core parity (completed)
 
 #### 1. Foundation (completed)
 
@@ -64,7 +64,7 @@ Replicate functional behaviour from `D:/Development/Repos/rust-calendar` in a Wi
 - [x] Import fixtures and conversion tests
 - [x] Manual parity checklist against Rust app (see `docs/PHASE1_MANUAL_PARITY_CHECKLIST.md`)
 
-### Phase 2 — Extended parity
+### Phase 2 — Extended parity (current target)
 
 - [ ] Countdown cards subsystem parity
 - [ ] PDF export parity
@@ -74,6 +74,7 @@ Replicate functional behaviour from `D:/Development/Repos/rust-calendar` in a Wi
 
 - Current implementation branch: `feature/phase1-ui-parity-core-views`
 - Mainline branch: `main`
+- Solo developer workflow: PRs are not required; direct branch commits and merges are the default.
 - Branch naming:
   - `feature/<name>` for feature work
   - `fix/<name>` for bug fixes

@@ -35,6 +35,12 @@ public partial class ShellViewModel
             DataContext = viewModel
         };
 
+        viewModel.EditEventRequested += async calendarEvent =>
+        {
+            await OpenEventDialogAsync(calendarEvent, window);
+            await viewModel.SearchCommand.ExecuteAsync(null);
+        };
+
         window.ShowDialog();
     }
 
@@ -68,7 +74,7 @@ public partial class ShellViewModel
         window.ShowDialog();
     }
 
-    private async Task OpenEventDialogAsync(CalendarEvent? calendarEvent)
+    private async Task OpenEventDialogAsync(CalendarEvent? calendarEvent, Window? owner = null)
     {
         var viewModel = new EventEditorViewModel(_eventService, _categoryService);
 
@@ -83,7 +89,7 @@ public partial class ShellViewModel
 
         var window = new EventEditorWindow
         {
-            Owner = System.Windows.Application.Current.MainWindow,
+            Owner = owner ?? System.Windows.Application.Current.MainWindow,
             DataContext = viewModel
         };
 

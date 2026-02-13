@@ -19,22 +19,26 @@ Replicate functional behaviour from `D:/Development/Repos/rust-calendar` in a Wi
 ### Phase 1 — Core parity (current target)
 
 #### 1. Foundation (completed)
+
 - [x] Create solution and layered projects (`App`, `Domain`, `Application`, `Infrastructure`, `Import`, `Tests`)
 - [x] Wire DI/host startup in WPF app
 - [x] Add initial shell VM and event service scaffolding
 
 #### 2. Persistence and schema (in progress)
+
 - [x] Define target SQLite schema for core entities (events, categories, templates, settings, themes)
 - [x] Add migration strategy for schema evolution
 - [x] Replace in-memory repositories with SQLite-backed repositories
 
 #### 3. Rust database import (completed)
+
 - [x] Create deterministic importer from Rust SQLite to new schema
 - [x] Preserve RFC3339 datetime semantics
 - [x] Preserve recurrence exception semantics (JSON lists)
 - [x] Add importer validation report (counts + conversion summary)
 
 #### 4. Core service parity (completed)
+
 - [x] Event CRUD and range queries
 - [x] Recurrence expansion parity
 - [x] Search parity
@@ -44,11 +48,13 @@ Replicate functional behaviour from `D:/Development/Repos/rust-calendar` in a Wi
 - [x] Backup/restore parity
 
 #### 5. UI parity for core views
+
 - [x] Day/Week/Work Week/Month navigation and rendering
 - [x] Event create/edit dialogs
 - [x] Search and management dialogs
 
 #### 6. Verification for phase 1
+
 - [x] Unit/integration tests for services and recurrence
 - [ ] Import fixtures and conversion tests
 - [ ] Manual parity checklist against Rust app
@@ -61,7 +67,7 @@ Replicate functional behaviour from `D:/Development/Repos/rust-calendar` in a Wi
 
 ## Branching and workflow
 
-- Current implementation branch: `feature/phase1-persistence-import-foundation`
+- Current implementation branch: `feature/phase1-ui-parity-core-views`
 - Mainline branch: `main`
 - Branch naming:
   - `feature/<name>` for feature work

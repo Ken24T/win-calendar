@@ -22,6 +22,16 @@
                 <DataGridTextColumn Header="Start" Binding="{Binding StartDateTime}" Width="2*" />
                 <DataGridTextColumn Header="End" Binding="{Binding EndDateTime}" Width="2*" />
                 <DataGridTextColumn Header="Category" Binding="{Binding Category}" Width="*" />
+                <DataGridTemplateColumn Header="" Width="90">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="Edit"
+                                    Width="64"
+                                    Command="{Binding DataContext.EditEventCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    CommandParameter="{Binding}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

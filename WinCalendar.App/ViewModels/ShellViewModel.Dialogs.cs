@@ -2,6 +2,7 @@ using System.Windows;
 using CommunityToolkit.Mvvm.Input;
 using WinCalendar.App.ViewModels.Dialogs;
 using WinCalendar.App.Views.Dialogs;
+using WinCalendar.Domain.Entities;
 
 namespace WinCalendar.App.ViewModels;
 
@@ -10,19 +11,18 @@ public partial class ShellViewModel
     [RelayCommand]
     private async Task OpenNewEventDialogAsync()
     {
-        var viewModel = new EventEditorViewModel(_eventService, _categoryService);
-        await viewModel.InitialiseAsync();
+        await OpenEventDialogAsync(null);
+    }
 
-        var window = new EventEditorWindow
+    [RelayCommand]
+    private async Task OpenEditEventDialogAsync(CalendarEvent? calendarEvent)
+    {
+        if (calendarEvent is null)
         {
-            Owner = System.Windows.Application.Current.MainWindow,
-            DataContext = viewModel
-        };
-
-        if (window.ShowDialog() == true)
-        {
-            await RefreshViewAsync();
+            return;
         }
+
+        await OpenEventDialogAsync(calendarEvent);
     }
 
     [RelayCommand]
@@ -66,5 +66,30 @@ public partial class ShellViewModel
         };
 
         window.ShowDialog();
+    }
+
+    private async Task OpenEventDialogAsync(CalendarEvent? calendarEvent)
+    {
+        var viewModel = new EventEditorViewModel(_eventService, _categoryService);
+
+        if (calendarEvent is null)
+        {
+            await viewModel.InitialiseForNewAsync();
+        }
+        else
+        {
+            await viewModel.InitialiseForEditAsync(calendarEvent);
+        }
+
+        var window = new EventEditorWindow
+        {
+            Owner = System.Windows.Application.Current.MainWindow,
+            DataContext = viewModel
+        };
+
+        if (window.ShowDialog() == true)
+        {
+            await RefreshViewAsync();
+        }
     }
 }

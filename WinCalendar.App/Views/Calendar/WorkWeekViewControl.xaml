@@ -25,10 +25,18 @@
                             <ListBox Grid.Row="1" ItemsSource="{Binding Events}">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
-                                        <StackPanel Margin="0,0,0,6">
-                                            <TextBlock FontWeight="SemiBold" Text="{Binding Title}" />
-                                            <TextBlock FontSize="11" Foreground="DimGray" Text="{Binding StartDateTime}" />
-                                        </StackPanel>
+                                        <DockPanel Margin="0,0,0,6">
+                                            <Button Content="Edit"
+                                                    Width="54"
+                                                    DockPanel.Dock="Right"
+                                                    Margin="6,0,0,0"
+                                                    Command="{Binding DataContext.OpenEditEventDialogCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                    CommandParameter="{Binding}" />
+                                            <StackPanel>
+                                                <TextBlock FontWeight="SemiBold" Text="{Binding Title}" />
+                                                <TextBlock FontSize="11" Foreground="DimGray" Text="{Binding StartDateTime}" />
+                                            </StackPanel>
+                                        </DockPanel>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
                             </ListBox>

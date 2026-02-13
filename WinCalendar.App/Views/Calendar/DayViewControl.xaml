@@ -16,6 +16,16 @@
                 <DataGridTextColumn Header="End" Binding="{Binding EndDateTime}" Width="2*" />
                 <DataGridTextColumn Header="Title" Binding="{Binding Title}" Width="3*" />
                 <DataGridTextColumn Header="Category" Binding="{Binding Category}" Width="*" />
+                <DataGridTemplateColumn Header="" Width="100">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="Edit"
+                                    Width="72"
+                                    Command="{Binding DataContext.OpenEditEventDialogCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    CommandParameter="{Binding}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

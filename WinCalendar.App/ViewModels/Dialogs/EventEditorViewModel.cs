@@ -10,6 +10,7 @@ public partial class EventEditorViewModel : ObservableObject, IDialogRequestClos
 {
     private readonly IEventService _eventService;
     private readonly ICategoryService _categoryService;
+    private Guid _eventId;
 
     public event EventHandler<bool?>? RequestClose;
 
@@ -43,9 +44,46 @@ public partial class EventEditorViewModel : ObservableObject, IDialogRequestClos
     [ObservableProperty]
     private string? _recurrenceRule;
 
+    [ObservableProperty]
+    private bool _canDelete;
+
     public ObservableCollection<string> Categories { get; } = [];
 
-    public async Task InitialiseAsync()
+    public async Task InitialiseForNewAsync()
+    {
+        _eventId = Guid.NewGuid();
+        CanDelete = false;
+
+        Title = string.Empty;
+        StartDateTime = DateTimeOffset.Now;
+        EndDateTime = DateTimeOffset.Now.AddHours(1);
+        IsAllDay = false;
+        Category = "General";
+        Location = null;
+        Notes = null;
+        RecurrenceRule = null;
+
+        await LoadCategoriesAsync();
+    }
+
+    public async Task InitialiseForEditAsync(CalendarEvent calendarEvent)
+    {
+        _eventId = calendarEvent.Id;
+        CanDelete = true;
+
+        Title = calendarEvent.Title;
+        StartDateTime = calendarEvent.StartDateTime;
+        EndDateTime = calendarEvent.EndDateTime;
+        IsAllDay = calendarEvent.IsAllDay;
+        Category = calendarEvent.Category;
+        Location = calendarEvent.Location;
+        Notes = calendarEvent.Notes;
+        RecurrenceRule = calendarEvent.RecurrenceRule;
+
+        await LoadCategoriesAsync();
+    }
+
+    private async Task LoadCategoriesAsync()
     {
         Categories.Clear();
         var categories = await _categoryService.GetCategoriesAsync();
@@ -65,7 +103,7 @@ public partial class EventEditorViewModel : ObservableObject, IDialogRequestClos
 
         await _eventService.SaveEventAsync(new CalendarEvent
         {
-            Id = Guid.NewGuid(),
+            Id = _eventId,
             Title = Title.Trim(),
             StartDateTime = StartDateTime,
             EndDateTime = EndDateTime,
@@ -83,5 +121,17 @@ public partial class EventEditorViewModel : ObservableObject, IDialogRequestClos
     private void Cancel()
     {
         RequestClose?.Invoke(this, false);
+    }
+
+    [RelayCommand]
+    private async Task DeleteAsync()
+    {
+        if (!CanDelete)
+        {
+            return;
+        }
+
+        await _eventService.DeleteEventAsync(_eventId);
+        RequestClose?.Invoke(this, true);
     }
 }

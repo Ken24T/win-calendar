@@ -38,6 +38,12 @@ public partial class ShellViewModel : ObservableObject
     [ObservableProperty]
     private DateTimeOffset _focusDate = DateTimeOffset.Now;
 
+    [ObservableProperty]
+    private bool _isLoading;
+
+    [ObservableProperty]
+    private string? _errorMessage;
+
     public ObservableCollection<CalendarEvent> DayEvents { get; } = [];
 
     public ObservableCollection<WeekDayColumnViewModel> WeekColumns { get; } = [];
@@ -47,6 +53,28 @@ public partial class ShellViewModel : ObservableObject
     public string ActiveViewLabel => $"View: {ActiveView}";
 
     public string CurrentRangeLabel => BuildCurrentRangeLabel();
+
+    public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
+
+    public bool HasVisibleEvents => ActiveView switch
+    {
+        CalendarViewType.Day => DayEvents.Count > 0,
+        CalendarViewType.Month => MonthCells.Any(cell => cell.Events.Count > 0),
+        _ => WeekColumns.Any(column => column.Events.Count > 0)
+    };
+
+    public bool ShowLoadingState => IsLoading;
+
+    public bool ShowErrorState => HasError;
+
+    public bool ShowEmptyState => !IsLoading && !HasError && !HasVisibleEvents;
+
+    public string EmptyStateMessage => ActiveView switch
+    {
+        CalendarViewType.Day => "No events for this day.",
+        CalendarViewType.Month => "No events for this month.",
+        _ => "No events for this range."
+    };
 
     [RelayCommand]
     private async Task PreviousRangeAsync()
@@ -112,11 +140,30 @@ public partial class ShellViewModel : ObservableObject
     [RelayCommand]
     private async Task RefreshViewAsync()
     {
-        _allEvents = await _eventService.GetEventsAsync();
+        IsLoading = true;
+        ErrorMessage = null;
 
-        BuildDayEvents();
-        BuildWeekColumns();
-        BuildMonthCells();
+        try
+        {
+            _allEvents = await _eventService.GetEventsAsync();
+
+            BuildDayEvents();
+            BuildWeekColumns();
+            BuildMonthCells();
+        }
+        catch
+        {
+            _allEvents = [];
+            BuildDayEvents();
+            BuildWeekColumns();
+            BuildMonthCells();
+            ErrorMessage = "Unable to load calendar events. Please try again.";
+        }
+        finally
+        {
+            IsLoading = false;
+            NotifyViewStateChanged();
+        }
 
         OnPropertyChanged(nameof(ActiveViewLabel));
         OnPropertyChanged(nameof(CurrentRangeLabel));
@@ -241,16 +288,38 @@ public partial class ShellViewModel : ObservableObject
     partial void OnFocusDateChanged(DateTimeOffset value)
     {
         OnPropertyChanged(nameof(CurrentRangeLabel));
+        OnPropertyChanged(nameof(EmptyStateMessage));
     }
 
     partial void OnActiveViewChanged(CalendarViewType value)
     {
         OnPropertyChanged(nameof(ActiveViewLabel));
         OnPropertyChanged(nameof(CurrentRangeLabel));
+        OnPropertyChanged(nameof(EmptyStateMessage));
+        NotifyViewStateChanged();
+    }
+
+    partial void OnIsLoadingChanged(bool value)
+    {
+        NotifyViewStateChanged();
+    }
+
+    partial void OnErrorMessageChanged(string? value)
+    {
+        NotifyViewStateChanged();
     }
 
     public async Task InitialiseAsync()
     {
         await RefreshViewAsync();
+    }
+
+    private void NotifyViewStateChanged()
+    {
+        OnPropertyChanged(nameof(HasError));
+        OnPropertyChanged(nameof(HasVisibleEvents));
+        OnPropertyChanged(nameof(ShowLoadingState));
+        OnPropertyChanged(nameof(ShowErrorState));
+        OnPropertyChanged(nameof(ShowEmptyState));
     }
 }

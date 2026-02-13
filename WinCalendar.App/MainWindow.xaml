@@ -27,6 +27,7 @@
     <Window.Resources>
         <converters:EnumToVisibilityConverter x:Key="EnumToVisibilityConverter" />
         <converters:BoolToMonthForegroundConverter x:Key="BoolToMonthForegroundConverter" />
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </Window.Resources>
 
     <Grid Margin="16">
@@ -69,6 +70,33 @@
             <views:WeekViewControl Visibility="{Binding ActiveView, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=Week}" />
             <views:WorkWeekViewControl Visibility="{Binding ActiveView, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=WorkWeek}" />
             <views:MonthViewControl Visibility="{Binding ActiveView, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=Month}" />
+
+            <Border Padding="14"
+                    Background="#AAFFFFFF"
+                    CornerRadius="6"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Visibility="{Binding ShowLoadingState, Converter={StaticResource BoolToVisibilityConverter}}">
+                <TextBlock Text="Loading calendar events..." FontWeight="SemiBold" />
+            </Border>
+
+            <Border Padding="14"
+                    Background="#AAFFFFFF"
+                    CornerRadius="6"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Visibility="{Binding ShowErrorState, Converter={StaticResource BoolToVisibilityConverter}}">
+                <TextBlock Text="{Binding ErrorMessage}" Foreground="IndianRed" FontWeight="SemiBold" />
+            </Border>
+
+            <Border Padding="14"
+                    Background="#AAFFFFFF"
+                    CornerRadius="6"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Visibility="{Binding ShowEmptyState, Converter={StaticResource BoolToVisibilityConverter}}">
+                <TextBlock Text="{Binding EmptyStateMessage}" Foreground="DimGray" FontWeight="SemiBold" />
+            </Border>
         </Grid>
     </Grid>
 </Window>

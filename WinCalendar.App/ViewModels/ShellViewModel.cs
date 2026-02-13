@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using WinCalendar.App.ViewModels.Calendar;
+using WinCalendar.App.ViewModels.Countdown;
 using WinCalendar.Application.Contracts;
 using WinCalendar.Domain.Entities;
 using WinCalendar.Domain.Enums;
@@ -14,6 +15,7 @@ public partial class ShellViewModel : ObservableObject
     private readonly IEventSearchService _eventSearchService;
     private readonly ICategoryService _categoryService;
     private readonly IEventTemplateService _eventTemplateService;
+    private readonly ICountdownService _countdownService;
 
     private IReadOnlyList<CalendarEvent> _allEvents = [];
 
@@ -21,12 +23,14 @@ public partial class ShellViewModel : ObservableObject
         IEventService eventService,
         IEventSearchService eventSearchService,
         ICategoryService categoryService,
-        IEventTemplateService eventTemplateService)
+        IEventTemplateService eventTemplateService,
+        ICountdownService countdownService)
     {
         _eventService = eventService;
         _eventSearchService = eventSearchService;
         _categoryService = categoryService;
         _eventTemplateService = eventTemplateService;
+        _countdownService = countdownService;
     }
 
     [ObservableProperty]
@@ -50,6 +54,8 @@ public partial class ShellViewModel : ObservableObject
 
     public ObservableCollection<MonthDayCellViewModel> MonthCells { get; } = [];
 
+    public ObservableCollection<CountdownCardItemViewModel> CountdownCards { get; } = [];
+
     public string ActiveViewLabel => $"View: {ActiveView}";
 
     public string CurrentRangeLabel => BuildCurrentRangeLabel();
@@ -68,6 +74,8 @@ public partial class ShellViewModel : ObservableObject
     public bool ShowErrorState => HasError;
 
     public bool ShowEmptyState => !IsLoading && !HasError && !HasVisibleEvents;
+
+    public bool HasCountdownCards => CountdownCards.Count > 0;
 
     public string EmptyStateMessage => ActiveView switch
     {
@@ -146,6 +154,7 @@ public partial class ShellViewModel : ObservableObject
         try
         {
             _allEvents = await _eventService.GetEventsAsync();
+            await LoadCountdownCardsAsync();
 
             BuildDayEvents();
             BuildWeekColumns();
@@ -154,6 +163,7 @@ public partial class ShellViewModel : ObservableObject
         catch
         {
             _allEvents = [];
+            CountdownCards.Clear();
             BuildDayEvents();
             BuildWeekColumns();
             BuildMonthCells();
@@ -318,8 +328,30 @@ public partial class ShellViewModel : ObservableObject
     {
         OnPropertyChanged(nameof(HasError));
         OnPropertyChanged(nameof(HasVisibleEvents));
+        OnPropertyChanged(nameof(HasCountdownCards));
         OnPropertyChanged(nameof(ShowLoadingState));
         OnPropertyChanged(nameof(ShowErrorState));
         OnPropertyChanged(nameof(ShowEmptyState));
+    }
+
+    private async Task LoadCountdownCardsAsync()
+    {
+        CountdownCards.Clear();
+
+        var items = await _countdownService.GetCountdownCardsAsync();
+        var now = DateTimeOffset.Now;
+
+        foreach (var item in items)
+        {
+            CountdownCards.Add(new CountdownCardItemViewModel
+            {
+                Title = item.Title,
+                TargetDateLabel = item.TargetDateTime.ToString("ddd dd MMM yyyy HH:mm"),
+                RemainingLabel = item.BuildRemainingLabel(now),
+                ColourHex = item.ColourHex
+            });
+        }
+
+        OnPropertyChanged(nameof(HasCountdownCards));
     }
 }

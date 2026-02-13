@@ -19,6 +19,7 @@ public static class DependencyInjection
         services.AddSingleton<IEventTemplateService, EventTemplateService>();
         services.AddSingleton<ISettingsService, SettingsService>();
         services.AddSingleton<IThemeService, ThemeService>();
+        services.AddSingleton<ICountdownService, CountdownService>();
         return services;
     }
 }

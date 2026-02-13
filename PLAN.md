@@ -66,7 +66,7 @@ Replicate functional behaviour from `D:/Development/Repos/rust-calendar` in a Wi
 
 ### Phase 2 — Extended parity (current target)
 
-- [ ] Countdown cards subsystem parity
+- [ ] Countdown cards subsystem parity (in progress: persistence + service + shell display foundation)
 - [ ] PDF export parity
 - [ ] Additional test coverage and performance checks
 

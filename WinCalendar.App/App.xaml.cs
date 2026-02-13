@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using WinCalendar.Application;
 using WinCalendar.Infrastructure;
+using WinCalendar.Infrastructure.Persistence;
 
 namespace WinCalendar.App;
 
@@ -29,6 +30,9 @@ public partial class App : System.Windows.Application
 	protected override async void OnStartup(StartupEventArgs e)
 	{
 		await _host.StartAsync();
+
+		var databaseMigrator = _host.Services.GetRequiredService<IDatabaseMigrator>();
+		await databaseMigrator.MigrateAsync();
 
 		var mainWindow = _host.Services.GetRequiredService<MainWindow>();
 		mainWindow.DataContext = _host.Services.GetRequiredService<ViewModels.ShellViewModel>();

@@ -24,9 +24,9 @@ Replicate functional behaviour from `D:/Development/Repos/rust-calendar` in a Wi
 - [x] Add initial shell VM and event service scaffolding
 
 #### 2. Persistence and schema (in progress)
-- [ ] Define target SQLite schema for core entities (events, categories, templates, settings, themes)
-- [ ] Add migration strategy for schema evolution
-- [ ] Replace in-memory repositories with SQLite-backed repositories
+- [x] Define target SQLite schema for core entities (events, categories, templates, settings, themes)
+- [x] Add migration strategy for schema evolution
+- [x] Replace in-memory repositories with SQLite-backed repositories
 
 #### 3. Rust database import (next)
 - [ ] Create deterministic importer from Rust SQLite to new schema

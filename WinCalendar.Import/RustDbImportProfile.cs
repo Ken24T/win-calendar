@@ -11,4 +11,6 @@ public sealed class RustDbImportProfile
     public bool ImportTemplates { get; init; } = true;
 
     public bool ImportSettings { get; init; } = true;
+
+    public bool ImportCustomThemes { get; init; } = true;
 }

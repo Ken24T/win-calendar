@@ -67,6 +67,12 @@ dotnet run --project WinCalendar.App/WinCalendar.App.csproj
 
 For SHIP/TCTBP activation, steps, approvals, and versioning rules, see [TCTBP Agent.md](TCTBP Agent.md) and [TCTBP.json](TCTBP.json).
 
+## Solo Developer Workflow
+
+- This repository is currently maintained by a single developer.
+- Pull requests are optional and are not required for normal delivery.
+- Prefer direct commits and pushes to the active branch, then merge directly when ready.
+
 ## Branch Naming
 
 - `feature/<name>` – New features

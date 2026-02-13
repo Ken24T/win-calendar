@@ -3,15 +3,36 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WinCalendar.App"
+        xmlns:converters="clr-namespace:WinCalendar.App.Converters"
+        xmlns:views="clr-namespace:WinCalendar.App.Views.Calendar"
         mc:Ignorable="d"
         Title="WinCalendar"
         Height="720"
         Width="1080"
         MinHeight="600"
         MinWidth="900">
+    <Window.InputBindings>
+        <KeyBinding Modifiers="Control" Key="N" Command="{Binding OpenNewEventDialogCommand}" />
+        <KeyBinding Modifiers="Control" Key="F" Command="{Binding OpenSearchDialogCommand}" />
+        <KeyBinding Modifiers="Control" Key="D1" Command="{Binding SetDayViewCommand}" />
+        <KeyBinding Modifiers="Control" Key="D2" Command="{Binding SetWeekViewCommand}" />
+        <KeyBinding Modifiers="Control" Key="D3" Command="{Binding SetWorkWeekViewCommand}" />
+        <KeyBinding Modifiers="Control" Key="D4" Command="{Binding SetMonthViewCommand}" />
+        <KeyBinding Modifiers="Control" Key="Left" Command="{Binding PreviousRangeCommand}" />
+        <KeyBinding Modifiers="Control" Key="Right" Command="{Binding NextRangeCommand}" />
+        <KeyBinding Modifiers="Control" Key="T" Command="{Binding GoToTodayCommand}" />
+        <KeyBinding Key="F5" Command="{Binding RefreshViewCommand}" />
+    </Window.InputBindings>
+
+    <Window.Resources>
+        <converters:EnumToVisibilityConverter x:Key="EnumToVisibilityConverter" />
+        <converters:BoolToMonthForegroundConverter x:Key="BoolToMonthForegroundConverter" />
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    </Window.Resources>
+
     <Grid Margin="16">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -27,29 +48,55 @@
             <TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Text="{Binding ActiveViewLabel}" />
         </StackPanel>
 
-        <Grid Grid.Row="2">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                <Button Width="200" Content="Load Sample Events" Command="{Binding LoadSampleEventsCommand}" />
+        <DockPanel Grid.Row="2" Margin="0,0,0,10">
+            <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+                <Button Width="160" Margin="0,0,8,0" Content="Load Sample Events" Command="{Binding LoadSampleEventsCommand}" />
+                <Button Width="110" Margin="0,0,8,0" Content="New Event" Command="{Binding OpenNewEventDialogCommand}" />
+                <Button Width="90" Margin="0,0,8,0" Content="Search" Command="{Binding OpenSearchDialogCommand}" />
+                <Button Width="100" Margin="0,0,8,0" Content="Categories" Command="{Binding OpenCategoryManagerDialogCommand}" />
+                <Button Width="95" Content="Templates" Command="{Binding OpenTemplateManagerDialogCommand}" />
             </StackPanel>
 
-            <DataGrid Grid.Row="1"
-                      ItemsSource="{Binding Events}"
-                      IsReadOnly="True"
-                      AutoGenerateColumns="False"
-                      CanUserAddRows="False">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Title" Binding="{Binding Title}" Width="2*" />
-                    <DataGridTextColumn Header="Start" Binding="{Binding StartDateTime}" Width="2*" />
-                    <DataGridTextColumn Header="End" Binding="{Binding EndDateTime}" Width="2*" />
-                    <DataGridCheckBoxColumn Header="All Day" Binding="{Binding IsAllDay}" Width="*" />
-                    <DataGridTextColumn Header="Category" Binding="{Binding Category}" Width="*" />
-                </DataGrid.Columns>
-            </DataGrid>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Right">
+                <Button Width="90" Margin="0,0,8,0" Content="Previous" Command="{Binding PreviousRangeCommand}" />
+                <Button Width="90" Margin="0,0,8,0" Content="Today" Command="{Binding GoToTodayCommand}" />
+                <Button Width="90" Margin="0,0,8,0" Content="Next" Command="{Binding NextRangeCommand}" />
+                <TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Text="{Binding CurrentRangeLabel}" />
+            </StackPanel>
+        </DockPanel>
+
+        <Grid Grid.Row="3">
+            <views:DayViewControl Visibility="{Binding ActiveView, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=Day}" />
+            <views:WeekViewControl Visibility="{Binding ActiveView, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=Week}" />
+            <views:WorkWeekViewControl Visibility="{Binding ActiveView, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=WorkWeek}" />
+            <views:MonthViewControl Visibility="{Binding ActiveView, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=Month}" />
+
+            <Border Padding="14"
+                    Background="#AAFFFFFF"
+                    CornerRadius="6"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Visibility="{Binding ShowLoadingState, Converter={StaticResource BoolToVisibilityConverter}}">
+                <TextBlock Text="Loading calendar events..." FontWeight="SemiBold" />
+            </Border>
+
+            <Border Padding="14"
+                    Background="#AAFFFFFF"
+                    CornerRadius="6"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Visibility="{Binding ShowErrorState, Converter={StaticResource BoolToVisibilityConverter}}">
+                <TextBlock Text="{Binding ErrorMessage}" Foreground="IndianRed" FontWeight="SemiBold" />
+            </Border>
+
+            <Border Padding="14"
+                    Background="#AAFFFFFF"
+                    CornerRadius="6"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Visibility="{Binding ShowEmptyState, Converter={StaticResource BoolToVisibilityConverter}}">
+                <TextBlock Text="{Binding EmptyStateMessage}" Foreground="DimGray" FontWeight="SemiBold" />
+            </Border>
         </Grid>
     </Grid>
 </Window>

@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Text.RegularExpressions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using WinCalendar.Application.Contracts;
@@ -8,6 +9,8 @@ namespace WinCalendar.App.ViewModels.Dialogs;
 
 public partial class CountdownManagerViewModel(ICountdownService countdownService) : ObservableObject
 {
+    private static readonly Regex ColourHexPattern = new("^#([0-9a-fA-F]{6}|[0-9a-fA-F]{8})$", RegexOptions.Compiled);
+
     [ObservableProperty]
     private CountdownCard? _selectedCard;
 
@@ -26,7 +29,17 @@ public partial class CountdownManagerViewModel(ICountdownService countdownServic
     [ObservableProperty]
     private string _sortOrderText = "0";
 
+    [ObservableProperty]
+    private bool _showInactive;
+
+    [ObservableProperty]
+    private string? _validationMessage;
+
+    public bool HasValidationMessage => !string.IsNullOrWhiteSpace(ValidationMessage);
+
     public ObservableCollection<CountdownCard> CountdownCards { get; } = [];
+
+    public ObservableCollection<CountdownCard> VisibleCountdownCards { get; } = [];
 
     public async Task InitialiseAsync()
     {
@@ -36,14 +49,17 @@ public partial class CountdownManagerViewModel(ICountdownService countdownServic
     [RelayCommand]
     private async Task SaveAsync()
     {
-        if (string.IsNullOrWhiteSpace(Title))
+        if (!TryParseSortOrder(out var sortOrder))
         {
             return;
         }
 
-        var sortOrder = int.TryParse(SortOrderText, out var parsedSortOrder)
-            ? parsedSortOrder
-            : 0;
+        if (!ValidateInput(sortOrder))
+        {
+            return;
+        }
+
+        ValidationMessage = null;
 
         var card = new CountdownCard
         {
@@ -83,13 +99,15 @@ public partial class CountdownManagerViewModel(ICountdownService countdownServic
 
     private async Task ReloadAsync()
     {
-        var cards = await countdownService.GetCountdownCardsAsync();
+        var cards = await countdownService.GetCountdownCardsForManagementAsync();
 
         CountdownCards.Clear();
         foreach (var card in cards)
         {
             CountdownCards.Add(card);
         }
+
+        RefreshVisibleCards();
     }
 
     partial void OnSelectedCardChanged(CountdownCard? value)
@@ -99,6 +117,7 @@ public partial class CountdownManagerViewModel(ICountdownService countdownServic
             return;
         }
 
+        ValidationMessage = null;
         Title = value.Title;
         TargetDateTime = value.TargetDateTime;
         ColourHex = value.ColourHex;
@@ -108,10 +127,94 @@ public partial class CountdownManagerViewModel(ICountdownService countdownServic
 
     private void ResetEditor()
     {
+        ValidationMessage = null;
         Title = string.Empty;
         TargetDateTime = DateTimeOffset.Now.AddDays(7);
         ColourHex = "#2D6CDF";
         IsActive = true;
         SortOrderText = "0";
+    }
+
+    partial void OnValidationMessageChanged(string? value)
+    {
+        OnPropertyChanged(nameof(HasValidationMessage));
+    }
+
+    partial void OnShowInactiveChanged(bool value)
+    {
+        RefreshVisibleCards();
+    }
+
+    private bool TryParseSortOrder(out int sortOrder)
+    {
+        if (!int.TryParse(SortOrderText, out sortOrder))
+        {
+            ValidationMessage = "Sort order must be a whole number.";
+            return false;
+        }
+
+        return true;
+    }
+
+    private bool ValidateInput(int sortOrder)
+    {
+        if (string.IsNullOrWhiteSpace(Title))
+        {
+            ValidationMessage = "Title is required.";
+            return false;
+        }
+
+        if (Title.Trim().Length > 100)
+        {
+            ValidationMessage = "Title must be 100 characters or fewer.";
+            return false;
+        }
+
+        if (!ColourHexPattern.IsMatch(ColourHex.Trim()))
+        {
+            ValidationMessage = "Colour must be a hex value like #2D6CDF.";
+            return false;
+        }
+
+        if (sortOrder < 0 || sortOrder > 999)
+        {
+            ValidationMessage = "Sort order must be between 0 and 999.";
+            return false;
+        }
+
+        if (TargetDateTime < DateTimeOffset.Now.AddYears(-1))
+        {
+            ValidationMessage = "Target date is too far in the past.";
+            return false;
+        }
+
+        return true;
+    }
+
+    private void RefreshVisibleCards()
+    {
+        var previousSelectionId = SelectedCard?.Id;
+
+        var filtered = CountdownCards
+            .Where(card => ShowInactive || card.IsActive)
+            .OrderBy(card => card.SortOrder)
+            .ThenBy(card => card.TargetDateTime)
+            .ThenBy(card => card.Title)
+            .ToList();
+
+        VisibleCountdownCards.Clear();
+        foreach (var card in filtered)
+        {
+            VisibleCountdownCards.Add(card);
+        }
+
+        if (previousSelectionId is null)
+        {
+            return;
+        }
+
+        SelectedCard = VisibleCountdownCards.FirstOrDefault(card => card.Id == previousSelectionId)
+            ?? CountdownCards.FirstOrDefault(card => card.Id == previousSelectionId)
+            ?? SelectedCard;
     }
 }

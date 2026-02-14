@@ -93,6 +93,7 @@
                                     CornerRadius="6">
                                 <StackPanel>
                                     <TextBlock FontWeight="SemiBold" Text="{Binding Title}" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Margin="0,4,0,0" FontSize="11" FontWeight="SemiBold" Foreground="DimGray" Text="{Binding StatusLabel}" />
                                     <TextBlock Margin="0,6,0,0" Foreground="DimGray" Text="{Binding TargetDateLabel}" />
                                     <TextBlock Margin="0,6,0,0" FontWeight="SemiBold" Text="{Binding RemainingLabel}" />
                                 </StackPanel>

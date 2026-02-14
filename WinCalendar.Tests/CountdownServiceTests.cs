@@ -53,6 +53,52 @@ public class CountdownServiceTests
         Assert.Equal("B", cards[1].Title);
     }
 
+    [Fact]
+    public async Task CountdownService_Should_Return_All_Cards_For_Management()
+    {
+        var repository = new InMemoryCountdownRepository(
+        [
+            new CountdownCard
+            {
+                Id = Guid.NewGuid(),
+                Title = "Inactive",
+                TargetDateTime = new DateTimeOffset(2026, 3, 10, 9, 0, 0, TimeSpan.FromHours(10)),
+                SortOrder = 1,
+                IsActive = false
+            },
+            new CountdownCard
+            {
+                Id = Guid.NewGuid(),
+                Title = "B",
+                TargetDateTime = new DateTimeOffset(2026, 3, 5, 9, 0, 0, TimeSpan.FromHours(10)),
+                SortOrder = 2,
+                IsActive = true
+            },
+            new CountdownCard
+            {
+                Id = Guid.NewGuid(),
+                Title = "A",
+                TargetDateTime = new DateTimeOffset(2026, 3, 1, 9, 0, 0, TimeSpan.FromHours(10)),
+                SortOrder = 1,
+                IsActive = true
+            }
+        ]);
+
+        var services = new ServiceCollection();
+        services.AddSingleton<ICountdownCardRepository>(repository);
+        services.AddApplication();
+
+        using var provider = services.BuildServiceProvider();
+        var service = provider.GetRequiredService<ICountdownService>();
+
+        var cards = await service.GetCountdownCardsForManagementAsync();
+
+        Assert.Equal(3, cards.Count);
+        Assert.Equal("A", cards[0].Title);
+        Assert.Equal("Inactive", cards[1].Title);
+        Assert.Equal("B", cards[2].Title);
+    }
+
     private sealed class InMemoryCountdownRepository(IReadOnlyList<CountdownCard> items) : ICountdownCardRepository
     {
         private readonly List<CountdownCard> _items = [.. items];

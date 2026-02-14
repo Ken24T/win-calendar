@@ -64,11 +64,12 @@ Replicate functional behaviour from `D:/Development/Repos/rust-calendar` in a Wi
 - [x] Import fixtures and conversion tests
 - [x] Manual parity checklist against Rust app (see `docs/PHASE1_MANUAL_PARITY_CHECKLIST.md`)
 
-### Phase 2 — Extended parity (current target)
+### Phase 2 — Extended parity (completed)
 
-- [ ] Countdown cards subsystem parity (in progress: persistence + service + shell display foundation)
-- [ ] PDF export parity (in progress: service + shell export command foundation)
-- [ ] Additional test coverage and performance checks
+- [x] Countdown cards subsystem parity
+- [x] PDF export parity
+- [x] Additional test coverage and performance checks
+- [x] Manual parity checklist created for Rust-app comparison (see `docs/PHASE2_MANUAL_PARITY_CHECKLIST.md`)
 
 ## Branching and workflow
 

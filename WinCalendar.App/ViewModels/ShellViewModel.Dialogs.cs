@@ -127,7 +127,13 @@ public partial class ShellViewModel
             .ToList();
 
         var title = $"WinCalendar Export - {CurrentRangeLabel}";
-        await _pdfExportService.ExportEventsAsync(eventsInRange, saveFileDialog.FileName, title);
+        await _pdfExportService.ExportEventsAsync(
+            eventsInRange,
+            saveFileDialog.FileName,
+            title,
+            ActiveView,
+            rangeStart,
+            rangeEnd);
     }
 
     private (DateTimeOffset Start, DateTimeOffset End) GetCurrentRangeBounds()

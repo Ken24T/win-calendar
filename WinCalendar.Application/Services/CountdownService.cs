@@ -17,6 +17,17 @@ internal sealed class CountdownService(ICountdownCardRepository countdownCardRep
             .ToList();
     }
 
+    public async Task<IReadOnlyList<CountdownCard>> GetCountdownCardsForManagementAsync(CancellationToken cancellationToken = default)
+    {
+        var items = await countdownCardRepository.GetAllAsync(cancellationToken);
+
+        return items
+            .OrderBy(item => item.SortOrder)
+            .ThenBy(item => item.TargetDateTime)
+            .ThenBy(item => item.Title)
+            .ToList();
+    }
+
     public Task SaveCountdownCardAsync(CountdownCard countdownCard, CancellationToken cancellationToken = default)
     {
         return countdownCardRepository.UpsertAsync(countdownCard, cancellationToken);

@@ -5,6 +5,10 @@
         Height="560"
         Width="760"
         WindowStartupLocation="CenterOwner">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    </Window.Resources>
+
     <Grid Margin="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -22,6 +26,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
             <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,4" Text="Title" />
@@ -36,17 +41,29 @@
             <TextBlock Grid.Row="1" Grid.Column="2" Margin="0,4" Text="Sort" />
             <TextBox Grid.Row="1" Grid.Column="3" Margin="0,0,0,8" Text="{Binding SortOrderText, UpdateSourceTrigger=PropertyChanged}" />
 
-            <CheckBox Grid.Row="2" Grid.Column="1" Margin="0,0,8,0" Content="Active" IsChecked="{Binding IsActive}" />
+            <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal">
+                <CheckBox Margin="0,0,12,0" Content="Active" IsChecked="{Binding IsActive}" />
+                <CheckBox Content="Show inactive" IsChecked="{Binding ShowInactive}" />
+            </StackPanel>
 
             <StackPanel Grid.Row="2" Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button Width="80" Margin="0,0,8,0" Content="New" Command="{Binding NewCardCommand}" />
                 <Button Width="80" Margin="0,0,8,0" Content="Save" Command="{Binding SaveCommand}" />
                 <Button Width="80" Content="Delete" Command="{Binding DeleteCommand}" />
             </StackPanel>
+
+            <TextBlock Grid.Row="3"
+                       Grid.Column="0"
+                       Grid.ColumnSpan="4"
+                       Margin="0,6,0,0"
+                       Foreground="IndianRed"
+                       FontWeight="SemiBold"
+                       Text="{Binding ValidationMessage}"
+                       Visibility="{Binding HasValidationMessage, Converter={StaticResource BoolToVisibilityConverter}}" />
         </Grid>
 
         <DataGrid Grid.Row="1"
-                  ItemsSource="{Binding CountdownCards}"
+                  ItemsSource="{Binding VisibleCountdownCards}"
                   SelectedItem="{Binding SelectedCard, Mode=TwoWay}"
                   AutoGenerateColumns="False"
                   CanUserAddRows="False"

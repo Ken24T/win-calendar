@@ -342,19 +342,56 @@ public partial class ShellViewModel : ObservableObject
         CountdownCards.Clear();
 
         var items = await _countdownService.GetCountdownCardsAsync();
-        var now = DateTimeOffset.Now;
 
         foreach (var item in items)
         {
-            CountdownCards.Add(new CountdownCardItemViewModel
+            var viewModel = new CountdownCardItemViewModel
             {
                 Title = item.Title,
+                TargetDateTime = item.TargetDateTime,
                 TargetDateLabel = item.TargetDateTime.ToString("ddd dd MMM yyyy HH:mm"),
-                RemainingLabel = item.BuildRemainingLabel(now),
-                ColourHex = item.ColourHex
-            });
+                ColourHex = item.ColourHex,
+                SortOrder = item.SortOrder
+            };
+
+            viewModel.UpdateRemainingLabel(DateTimeOffset.Now);
+            CountdownCards.Add(viewModel);
         }
 
+        ApplyCountdownOrdering();
+
         OnPropertyChanged(nameof(HasCountdownCards));
+    }
+
+    public void RefreshCountdownLabels()
+    {
+        var now = DateTimeOffset.Now;
+        foreach (var card in CountdownCards)
+        {
+            card.UpdateRemainingLabel(now);
+        }
+
+        ApplyCountdownOrdering();
+    }
+
+    private void ApplyCountdownOrdering()
+    {
+        var ordered = CountdownCards
+            .OrderBy(item => item.PriorityRank)
+            .ThenBy(item => item.SortOrder)
+            .ThenBy(item => item.TargetDateTime)
+            .ThenBy(item => item.Title)
+            .ToList();
+
+        if (ordered.Count == CountdownCards.Count && ordered.SequenceEqual(CountdownCards))
+        {
+            return;
+        }
+
+        CountdownCards.Clear();
+        foreach (var item in ordered)
+        {
+            CountdownCards.Add(item);
+        }
     }
 }

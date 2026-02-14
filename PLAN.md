@@ -71,9 +71,17 @@ Replicate functional behaviour from `D:/Development/Repos/rust-calendar` in a Wi
 - [x] Additional test coverage and performance checks
 - [x] Manual parity checklist created for Rust-app comparison (see `docs/PHASE2_MANUAL_PARITY_CHECKLIST.md`)
 
+### Phase 3 — Post-parity hardening and release readiness (proposed)
+
+- [ ] Complete remaining manual parity checks from `docs/PHASE2_MANUAL_PARITY_CHECKLIST.md`
+- [ ] Resolve any parity deltas found during manual comparison
+- [ ] Add focused regression tests for parity deltas and edge cases
+- [ ] Review startup diagnostics retention and tune production logging behaviour
+- [ ] Prepare release notes and version/tag alignment for next ship milestone
+
 ## Branching and workflow
 
-- Current implementation branch: `feature/phase2-countdown-pdf-foundation`
+- Current implementation branch: `main`
 - Mainline branch: `main`
 - Solo developer workflow: PRs are not required; direct branch commits and merges are the default.
 - Startup diagnostics: retained in app startup and global exception paths for Phase 2 troubleshooting.

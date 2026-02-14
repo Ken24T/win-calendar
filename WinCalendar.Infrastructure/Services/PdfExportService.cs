@@ -57,6 +57,7 @@ internal sealed class PdfExportService : IPdfExportService
                         var sortedEvents = events
                             .OrderBy(item => item.StartDateTime)
                             .ThenBy(item => item.Title)
+                            .ThenBy(item => item.Id)
                             .ToList();
 
                         if (sortedEvents.Count == 0)

@@ -335,7 +335,7 @@ public partial class ShellViewModel : ObservableObject
 
                 events.Add(new CalendarEvent
                 {
-                    Id = Guid.Parse($"20000000-0000-0000-0000-000000{dayIndex + 1:00}{slot + 1:00}"),
+                    Id = Guid.Parse($"20000000-0000-0000-0000-00000000{dayIndex + 1:00}{slot + 1:00}"),
                     Title = $"Dense schedule {day:ddd} #{slot + 1}",
                     StartDateTime = start,
                     EndDateTime = end,

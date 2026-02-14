@@ -21,6 +21,7 @@ Capture WinCalendar vs Rust parity mismatches discovered during Phase 3 verifica
 | P3-D02 | Countdown ordering | Tie ordering with same sort/time | _TBD during manual pass_ | _TBD during manual pass_ | Medium | Open | - | - | Validate manager + shell panel |
 | P3-D03 | PDF dense layout | High-volume week export readability | _TBD during manual pass_ | _TBD during manual pass_ | Medium | Open | - | - | Compare week + work week exports |
 | P3-D04 | PDF wrapping | Long title/notes wrapping | _TBD during manual pass_ | _TBD during manual pass_ | Medium | Open | - | - | Validate day + month exports |
+| P3-D05 | P3 data seeding | Load P3 Data action should complete without runtime errors | Seed operation succeeds | Runtime error: invalid GUID format from dense-event seed ID | High | Resolved | Copilot | _pending commit_ | Fixed GUID format in dense-event seed IDs |
 
 ## Re-Verification Log
 

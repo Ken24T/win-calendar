@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using WinCalendar.Domain.Entities;
 
 namespace WinCalendar.App.ViewModels.Countdown;
 
@@ -30,54 +31,13 @@ public sealed partial class CountdownCardItemViewModel : ObservableObject
 
     public void UpdateRemainingLabel(DateTimeOffset now)
     {
-        var remaining = TargetDateTime - now;
-
-        if (remaining <= TimeSpan.Zero)
+        var presentation = new CountdownCard
         {
-            var elapsed = now - TargetDateTime;
+            TargetDateTime = TargetDateTime
+        }.BuildPresentation(now);
 
-            StatusLabel = "Overdue";
-            PriorityRank = 0;
-
-            if (elapsed.TotalDays >= 1)
-            {
-                RemainingLabel = $"{Math.Floor(elapsed.TotalDays)}d overdue";
-                return;
-            }
-
-            if (elapsed.TotalHours >= 1)
-            {
-                RemainingLabel = $"{Math.Floor(elapsed.TotalHours)}h overdue";
-                return;
-            }
-
-            RemainingLabel = "Overdue";
-            return;
-        }
-
-        if (remaining.TotalHours <= 48)
-        {
-            StatusLabel = "Due soon";
-            PriorityRank = 1;
-        }
-        else
-        {
-            StatusLabel = "Upcoming";
-            PriorityRank = 2;
-        }
-
-        if (remaining.TotalDays >= 1)
-        {
-            RemainingLabel = $"{Math.Floor(remaining.TotalDays)}d {remaining.Hours}h remaining";
-            return;
-        }
-
-        if (remaining.TotalHours >= 1)
-        {
-            RemainingLabel = $"{Math.Floor(remaining.TotalHours)}h {remaining.Minutes}m remaining";
-            return;
-        }
-
-        RemainingLabel = $"{Math.Max(1, remaining.Minutes)}m remaining";
+        StatusLabel = presentation.StatusLabel;
+        RemainingLabel = presentation.RemainingLabel;
+        PriorityRank = presentation.PriorityRank;
     }
 }

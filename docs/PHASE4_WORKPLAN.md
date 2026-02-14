@@ -17,21 +17,21 @@ Ship the next stable WinCalendar release and strengthen quality after parity com
 
 ## 1) Release Execution
 
-- [ ] Execute `docs/PHASE3_RELEASE_READINESS_CHECKLIST.md`
-- [ ] Finalise `docs/RELEASE_NOTES_DRAFT_v0.3.0.md`
-- [ ] Perform SHIP/TCTBP bump/tag/push flow
-- [ ] Verify release workflow artifact output
+- [x] Execute `docs/PHASE3_RELEASE_READINESS_CHECKLIST.md`
+- [x] Finalise `docs/RELEASE_NOTES_DRAFT_v0.3.0.md`
+- [x] Perform SHIP/TCTBP bump/tag/push flow
+- [x] Verify release workflow artifact output
 
 ## 2) Stability and Operations
 
-- [ ] Review startup diagnostics logs under real usage
-- [ ] Tune any noisy non-critical error paths
-- [ ] Add one operational troubleshooting note for common startup/runtime failures
+- [x] Review startup diagnostics logs under real usage
+- [x] Tune any noisy non-critical error paths
+- [x] Add one operational troubleshooting note for common startup/runtime failures
 
 ## 3) UX Polish (Targeted)
 
-- [ ] Improve dense Month-cell readability under heavy event load
-- [ ] Verify countdown panel readability for long titles and narrow window widths
+- [x] Improve dense Month-cell readability under heavy event load
+- [x] Verify countdown panel readability for long titles and narrow window widths
 - [ ] Confirm keyboard shortcuts + dialog flows remain consistent after recent additions
 
 ## 4) Performance + Regression

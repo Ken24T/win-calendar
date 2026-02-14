@@ -1,4 +1,4 @@
-# WinCalendar v0.3.0 (Draft)
+# WinCalendar v0.3.0
 
 Last updated: 2026-02-14
 
@@ -44,8 +44,8 @@ This release focuses on Phase 2 parity completion and Phase 3 hardening foundati
 
 ## Known Follow-up Items
 
-- Complete ship version bump/tag/push sequence for `v0.3.0`.
-- Verify release workflow artifact upload on tagged release run.
+- Continue Phase 4 quality uplift work (focused UX polish and regression expansion).
+- Confirm keyboard shortcuts and dialog workflow consistency after quality updates.
 
 ## Build and Test Baseline
 

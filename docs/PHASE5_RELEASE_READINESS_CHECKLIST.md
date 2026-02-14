@@ -14,11 +14,11 @@ Checklist for preparing WinCalendar `v0.4.0` after Phase 5 validation and regres
 
 ## Pre-release Gates
 
-- [ ] Build succeeds locally (`dotnet build WinCalendar.sln`)
-- [ ] Full test suite passes (`dotnet test WinCalendar.sln`)
-- [ ] Problems panel is clean
-- [ ] `docs/PHASE5_MANUAL_SMOKE_CHECKLIST.md` completed
-- [ ] All active Phase 5 deltas moved to `Resolved` or `Accepted`
+- [x] Build succeeds locally (`dotnet build WinCalendar.sln`)
+- [x] Full test suite passes (`dotnet test WinCalendar.sln`)
+- [x] Problems panel is clean
+- [x] `docs/PHASE5_MANUAL_SMOKE_CHECKLIST.md` completed
+- [x] All active Phase 5 deltas moved to `Resolved` or `Accepted`
 
 ## Version Alignment
 
@@ -41,9 +41,10 @@ Release workflow accepts tags:
 
 ## Release Notes
 
-- [ ] Draft and finalise release notes for `v0.4.0`
-- [ ] Confirm user-facing wording uses Australian English
-- [ ] Confirm notable fixes/features map to shipped commits
+- [x] Draft release notes for `v0.4.0` (`docs/RELEASE_NOTES_DRAFT_v0.4.0.md`)
+- [ ] Finalise release notes for `v0.4.0`
+- [x] Confirm user-facing wording uses Australian English
+- [x] Confirm notable fixes/features map to shipped commits
 
 ## Publish Sequence (TCTBP-aligned)
 

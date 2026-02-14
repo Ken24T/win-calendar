@@ -97,7 +97,7 @@ Replicate functional behaviour from `D:/Development/Repos/rust-calendar` in a Wi
 ### Phase 5 — v0.4.0 planning and delivery (current target)
 
 - [x] Establish Phase 5 scope and acceptance criteria (`docs/PHASE5_WORKPLAN.md`)
-- [ ] Execute manual smoke verification across Day/Week/Work Week/Month and dialogs
+- [x] Execute manual smoke verification across Day/Week/Work Week/Month and dialogs
 - [x] Expand targeted regression coverage for high-risk user workflows
 - [ ] Complete release readiness checklist for `v0.4.0`
 - [ ] Ship `v0.4.0` and verify CI/release artefacts

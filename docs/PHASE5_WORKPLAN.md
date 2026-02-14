@@ -17,16 +17,16 @@ Define and deliver the next stable release (`v0.4.0`) after Phase 4 closeout, wi
 
 ## 1) Scope and Acceptance
 
-- [ ] Confirm Phase 5 deliverables and non-goals
-- [ ] Define release acceptance criteria for `v0.4.0`
-- [ ] Link implementation tasks to verification evidence
+- [x] Confirm Phase 5 deliverables and non-goals
+- [x] Define release acceptance criteria for `v0.4.0`
+- [x] Link implementation tasks to verification evidence
 
 ## 2) Workflow Validation
 
-- [ ] Execute `docs/PHASE5_MANUAL_SMOKE_CHECKLIST.md`
-- [ ] Run manual smoke pass for Day/Week/Work Week/Month navigation
-- [ ] Verify core dialogs and commands (new/edit/search/countdown/categories/templates/export)
-- [ ] Record any issues as deltas and resolve High severity items
+- [x] Execute `docs/PHASE5_MANUAL_SMOKE_CHECKLIST.md`
+- [x] Run manual smoke pass for Day/Week/Work Week/Month navigation
+- [x] Verify core dialogs and commands (new/edit/search/countdown/categories/templates/export)
+- [x] Record any issues as deltas and resolve High severity items (`docs/PHASE5_DELTAS.md`)
 
 ## 3) Regression Uplift
 

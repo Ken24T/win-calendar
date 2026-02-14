@@ -94,9 +94,17 @@ Replicate functional behaviour from `D:/Development/Repos/rust-calendar` in a Wi
 - [x] Closeout verification (full build/test/problems pass)
 - [x] Detailed task tracking in `docs/PHASE4_WORKPLAN.md`
 
+### Phase 5 — v0.4.0 planning and delivery (current target)
+
+- [x] Establish Phase 5 scope and acceptance criteria (`docs/PHASE5_WORKPLAN.md`)
+- [x] Execute manual smoke verification across Day/Week/Work Week/Month and dialogs
+- [x] Expand targeted regression coverage for high-risk user workflows
+- [ ] Complete release readiness checklist for `v0.4.0`
+- [ ] Ship `v0.4.0` and verify CI/release artefacts
+
 ## Branching and workflow
 
-- Current implementation branch: `feature/phase4-regression-closeout`
+- Current implementation branch: `feature/phase5-planning-and-execution`
 - Mainline branch: `main`
 - Solo developer workflow: PRs are not required; direct branch commits and merges are the default.
 - Startup diagnostics: retained in app startup and global exception paths for Phase 2 troubleshooting.

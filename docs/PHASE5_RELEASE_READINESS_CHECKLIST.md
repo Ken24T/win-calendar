@@ -9,8 +9,8 @@ Checklist for preparing WinCalendar `v0.4.0` after Phase 5 validation and regres
 ## Current Version Baseline
 
 - Source of truth: `Directory.Build.props`
-- Current version: `0.3.0`
-- Next planned release target: `0.4.0`
+- Current version: `0.4.0`
+- Next planned release target: `0.5.0`
 
 ## Pre-release Gates
 
@@ -22,12 +22,12 @@ Checklist for preparing WinCalendar `v0.4.0` after Phase 5 validation and regres
 
 ## Version Alignment
 
-- [ ] Update `Directory.Build.props`:
+- [x] Update `Directory.Build.props`:
   - `Version`
   - `AssemblyVersion`
   - `FileVersion`
   - `InformationalVersion`
-- [ ] Confirm release tag value matches `Version` exactly
+- [x] Confirm release tag value matches `Version` exactly
 
 ## Tag and Workflow Compatibility
 
@@ -36,13 +36,13 @@ Release workflow accepts tags:
 - `vX.Y.Z`
 - `X.Y.Z`
 
-- [ ] Choose tag format (`0.4.0` preferred)
-- [ ] Confirm tag points to commit that introduces version bump
+- [x] Choose tag format (`0.4.0`)
+- [x] Confirm tag points to commit that introduces version bump
 
 ## Release Notes
 
 - [x] Draft release notes for `v0.4.0` (`docs/RELEASE_NOTES_DRAFT_v0.4.0.md`)
-- [ ] Finalise release notes for `v0.4.0`
+- [x] Finalise release notes for `v0.4.0`
 - [x] Confirm user-facing wording uses Australian English
 - [x] Confirm notable fixes/features map to shipped commits
 
@@ -56,10 +56,10 @@ Release workflow accepts tags:
 6. Tag
 7. Push
 
-- [ ] Execute publish sequence on approved ship command
+- [x] Execute publish sequence on approved ship command
 
 ## Post-release Verification
 
-- [ ] CI workflow green on `main`
-- [ ] Release workflow artefact uploaded successfully
-- [ ] Local branch sync complete
+- [x] CI workflow green on `main`
+- [x] Release workflow artefact uploaded successfully (`wincalendar-0.4.0`)
+- [x] Local branch sync complete

@@ -37,9 +37,9 @@ Define and deliver the next stable release (`v0.4.0`) after Phase 4 closeout, wi
 ## 4) Release Execution (`v0.4.0`)
 
 - [x] Prepare release readiness checklist (`docs/PHASE5_RELEASE_READINESS_CHECKLIST.md`)
-- [ ] Execute release readiness checklist
-- [ ] Bump version metadata and tag per SHIP/TCTBP flow
-- [ ] Validate CI and release artefact output
+- [x] Execute release readiness checklist
+- [x] Bump version metadata and tag per SHIP/TCTBP flow
+- [x] Validate CI and release artefact output
 
 ## Exit Criteria
 

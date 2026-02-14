@@ -11,7 +11,7 @@
         <converters:BoolToMonthForegroundConverter x:Key="BoolToMonthForegroundConverter" />
     </UserControl.Resources>
 
-    <Grid>
+    <Grid Background="{DynamicResource AppPanelBackgroundBrush}">
         <ItemsControl ItemsSource="{Binding MonthCells}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -20,10 +20,10 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Border Margin="2" Padding="5">
+                    <Border Margin="2" Padding="5" Background="{DynamicResource AppPanelBackgroundBrush}">
                         <Border.Style>
                             <Style TargetType="Border">
-                                <Setter Property="BorderBrush" Value="#DDDDDD" />
+                                <Setter Property="BorderBrush" Value="{DynamicResource AppBorderBrush}" />
                                 <Setter Property="BorderThickness" Value="1" />
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsToday}" Value="True">
@@ -67,7 +67,7 @@
                                        Margin="0,4,0,0"
                                        FontSize="10"
                                        FontWeight="SemiBold"
-                                       Foreground="DimGray"
+                                       Foreground="{DynamicResource AppSecondaryTextBrush}"
                                        Text="{Binding HiddenEventsLabel}" />
                         </Grid>
                     </Border>

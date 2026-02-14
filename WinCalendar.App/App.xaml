@@ -3,6 +3,40 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:WinCalendar.App">
     <Application.Resources>
-         
+        <SolidColorBrush x:Key="AppWindowBackgroundBrush" Color="#F7F7F9" />
+        <SolidColorBrush x:Key="AppPanelBackgroundBrush" Color="#FFFFFF" />
+        <SolidColorBrush x:Key="AppPanelMutedBackgroundBrush" Color="#F0F3F8" />
+        <SolidColorBrush x:Key="AppOverlayBackgroundBrush" Color="#CCFFFFFF" />
+        <SolidColorBrush x:Key="AppPrimaryTextBrush" Color="#24272E" />
+        <SolidColorBrush x:Key="AppSecondaryTextBrush" Color="#626B7A" />
+        <SolidColorBrush x:Key="AppBorderBrush" Color="#D9DEE8" />
+        <SolidColorBrush x:Key="AppErrorTextBrush" Color="#B42318" />
+
+        <Style TargetType="Window">
+            <Setter Property="Background" Value="{DynamicResource AppWindowBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource AppPrimaryTextBrush}" />
+        </Style>
+
+        <Style TargetType="Menu">
+            <Setter Property="Background" Value="{DynamicResource AppPanelBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource AppPrimaryTextBrush}" />
+        </Style>
+
+        <Style TargetType="MenuItem">
+            <Setter Property="Foreground" Value="{DynamicResource AppPrimaryTextBrush}" />
+        </Style>
+
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource AppPrimaryTextBrush}" />
+        </Style>
+
+        <Style TargetType="DataGrid">
+            <Setter Property="Background" Value="{DynamicResource AppPanelBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource AppPrimaryTextBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AppBorderBrush}" />
+            <Setter Property="GridLinesVisibility" Value="Horizontal" />
+            <Setter Property="HorizontalGridLinesBrush" Value="{DynamicResource AppBorderBrush}" />
+            <Setter Property="VerticalGridLinesBrush" Value="{DynamicResource AppBorderBrush}" />
+        </Style>
     </Application.Resources>
 </Application>

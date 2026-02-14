@@ -11,6 +11,23 @@ namespace WinCalendar.App.ViewModels;
 public partial class ShellViewModel
 {
     [RelayCommand]
+    private void ShowStubFeature(string? featureName)
+    {
+        var label = string.IsNullOrWhiteSpace(featureName) ? "This feature" : featureName.Trim();
+        MessageBox.Show(
+            $"{label} is not implemented yet.",
+            "WinCalendar",
+            MessageBoxButton.OK,
+            MessageBoxImage.Information);
+    }
+
+    [RelayCommand]
+    private void OpenThemeManagerDialog()
+    {
+        ShowStubFeature("Manage Themes");
+    }
+
+    [RelayCommand]
     private async Task OpenNewEventDialogAsync()
     {
         await OpenEventDialogAsync(null, null, null);

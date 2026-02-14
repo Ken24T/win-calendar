@@ -10,7 +10,9 @@
         Height="720"
         Width="1080"
         MinHeight="600"
-        MinWidth="900">
+        MinWidth="900"
+        Background="{DynamicResource AppWindowBackgroundBrush}"
+        Foreground="{DynamicResource AppPrimaryTextBrush}">
     <Window.InputBindings>
         <KeyBinding Modifiers="Control" Key="N" Command="{Binding OpenNewEventDialogCommand}" />
         <KeyBinding Modifiers="Control" Key="F" Command="{Binding OpenSearchDialogCommand}" />
@@ -36,20 +38,74 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <TextBlock FontSize="28" FontWeight="SemiBold" Text="{Binding Title}" />
+        <Menu Grid.Row="0" Background="{DynamicResource AppPanelBackgroundBrush}">
+            <MenuItem Header="_File">
+                <MenuItem Header="Export to PDF" Command="{Binding ExportCurrentViewPdfCommand}" />
+                <Separator />
+                <MenuItem Header="Backup Database..." InputGestureText="Ctrl+B" Command="{Binding ShowStubFeatureCommand}" CommandParameter="Backup Database" />
+                <MenuItem Header="Manage Backups..." Command="{Binding ShowStubFeatureCommand}" CommandParameter="Manage Backups" />
+                <Separator />
+                <MenuItem Header="Exit" Command="{Binding ShowStubFeatureCommand}" CommandParameter="Exit" />
+            </MenuItem>
 
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,12,0,12">
+            <MenuItem Header="_Edit">
+                <MenuItem Header="Undo" InputGestureText="Ctrl+Z" IsEnabled="False" />
+                <MenuItem Header="Redo" InputGestureText="Ctrl+Y" IsEnabled="False" />
+                <Separator />
+                <MenuItem Header="Settings" InputGestureText="Ctrl+S" Command="{Binding ShowStubFeatureCommand}" CommandParameter="Settings" />
+                <MenuItem Header="Manage Themes..." Command="{Binding OpenThemeManagerDialogCommand}" />
+                <MenuItem Header="Manage Categories..." Command="{Binding OpenCategoryManagerDialogCommand}" />
+            </MenuItem>
+
+            <MenuItem Header="_View">
+                <MenuItem Header="Show Sidebar" InputGestureText="Ctrl+I" IsCheckable="True" IsChecked="{Binding IsSidebarVisible, Mode=TwoWay}" />
+                <MenuItem Header="Show All-Day Events Ribbon" IsCheckable="True" IsChecked="True" IsEnabled="False" />
+                <Separator />
+                <MenuItem Header="Calendar Views">
+                    <MenuItem Header="Day" Command="{Binding SetDayViewCommand}" />
+                    <MenuItem Header="Week" Command="{Binding SetWeekViewCommand}" />
+                    <MenuItem Header="Work Week" Command="{Binding SetWorkWeekViewCommand}" />
+                    <MenuItem Header="Month" Command="{Binding SetMonthViewCommand}" />
+                </MenuItem>
+                <MenuItem Header="Themes">
+                    <MenuItem Header="Light" Command="{Binding SetThemeLightCommand}" IsCheckable="True" IsChecked="{Binding IsLightThemeSelected}" />
+                    <MenuItem Header="Dark" Command="{Binding SetThemeDarkCommand}" IsCheckable="True" IsChecked="{Binding IsDarkThemeSelected}" />
+                    <MenuItem Header="System" Command="{Binding SetThemeSystemCommand}" IsCheckable="True" IsChecked="{Binding IsSystemThemeSelected}" />
+                    <Separator />
+                    <MenuItem Header="Manage Themes..." Command="{Binding OpenThemeManagerDialogCommand}" />
+                </MenuItem>
+                <MenuItem Header="Filter by Category" Command="{Binding ShowStubFeatureCommand}" CommandParameter="Filter by Category" />
+                <MenuItem Header="Countdown Cards" Command="{Binding OpenCountdownManagerDialogCommand}" />
+            </MenuItem>
+
+            <MenuItem Header="_Events">
+                <MenuItem Header="New Event..." InputGestureText="Ctrl+N" Command="{Binding OpenNewEventDialogCommand}" />
+                <MenuItem Header="Templates" Command="{Binding OpenTemplateManagerDialogCommand}" />
+                <MenuItem Header="Search Events..." InputGestureText="Ctrl+F" Command="{Binding OpenSearchDialogCommand}" />
+                <MenuItem Header="Import Event..." Command="{Binding ShowStubFeatureCommand}" CommandParameter="Import Event" />
+                <MenuItem Header="Export Events" Command="{Binding ShowStubFeatureCommand}" CommandParameter="Export Events" />
+            </MenuItem>
+
+            <MenuItem Header="_Help">
+                <MenuItem Header="About..." Command="{Binding ShowStubFeatureCommand}" CommandParameter="About" />
+            </MenuItem>
+        </Menu>
+
+        <TextBlock Grid.Row="1" FontSize="28" FontWeight="SemiBold" Text="{Binding Title}" />
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,12,0,12">
             <Button Width="140" Margin="0,0,8,0" Content="Day" Command="{Binding SetDayViewCommand}" />
             <Button Width="140" Margin="0,0,8,0" Content="Week" Command="{Binding SetWeekViewCommand}" />
             <Button Width="140" Margin="0,0,8,0" Content="Work Week" Command="{Binding SetWorkWeekViewCommand}" />
             <Button Width="140" Margin="0,0,8,0" Content="Month" Command="{Binding SetMonthViewCommand}" />
-            <TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Text="{Binding ActiveViewLabel}" />
+            <TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{DynamicResource AppSecondaryTextBrush}" Text="{Binding ActiveViewLabel}" />
         </StackPanel>
 
-        <DockPanel Grid.Row="2" Margin="0,0,0,10">
+        <DockPanel Grid.Row="3" Margin="0,0,0,10">
             <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
                 <Button Width="160" Margin="0,0,8,0" Content="Load Sample Events" Command="{Binding LoadSampleEventsCommand}" />
                 <Button Width="130" Margin="0,0,8,0" Content="Load P3 Data" Command="{Binding LoadPhase3VerificationDataCommand}" />
@@ -65,14 +121,15 @@
                 <Button Width="90" Margin="0,0,8,0" Content="Previous" Command="{Binding PreviousRangeCommand}" />
                 <Button Width="90" Margin="0,0,8,0" Content="Today" Command="{Binding GoToTodayCommand}" />
                 <Button Width="90" Margin="0,0,8,0" Content="Next" Command="{Binding NextRangeCommand}" />
-                <TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Text="{Binding CurrentRangeLabel}" />
+                <TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{DynamicResource AppSecondaryTextBrush}" Text="{Binding CurrentRangeLabel}" />
             </StackPanel>
         </DockPanel>
 
-        <Border Grid.Row="3"
+            <Border Grid.Row="4"
                 Margin="0,0,0,10"
                 Padding="10"
-                BorderBrush="#DDDDDD"
+                Background="{DynamicResource AppPanelBackgroundBrush}"
+                BorderBrush="{DynamicResource AppBorderBrush}"
                 BorderThickness="1"
                 CornerRadius="6"
                 Visibility="{Binding HasCountdownCards, Converter={StaticResource BoolToVisibilityConverter}}">
@@ -99,8 +156,8 @@
                                                TextWrapping="Wrap"
                                                TextTrimming="CharacterEllipsis"
                                                MaxHeight="34" />
-                                    <TextBlock Margin="0,4,0,0" FontSize="11" FontWeight="SemiBold" Foreground="DimGray" Text="{Binding StatusLabel}" />
-                                    <TextBlock Margin="0,6,0,0" Foreground="DimGray" Text="{Binding TargetDateLabel}" />
+                                    <TextBlock Margin="0,4,0,0" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource AppSecondaryTextBrush}" Text="{Binding StatusLabel}" />
+                                    <TextBlock Margin="0,6,0,0" Foreground="{DynamicResource AppSecondaryTextBrush}" Text="{Binding TargetDateLabel}" />
                                     <TextBlock Margin="0,6,0,0" FontWeight="SemiBold" Text="{Binding RemainingLabel}" />
                                 </StackPanel>
                             </Border>
@@ -110,37 +167,112 @@
             </StackPanel>
         </Border>
 
-        <Grid Grid.Row="4">
-            <views:DayViewControl Visibility="{Binding ActiveView, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=Day}" />
-            <views:WeekViewControl Visibility="{Binding ActiveView, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=Week}" />
-            <views:WorkWeekViewControl Visibility="{Binding ActiveView, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=WorkWeek}" />
-            <views:MonthViewControl Visibility="{Binding ActiveView, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=Month}" />
+        <Grid Grid.Row="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
 
-            <Border Padding="14"
-                    Background="#AAFFFFFF"
-                    CornerRadius="6"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Visibility="{Binding ShowLoadingState, Converter={StaticResource BoolToVisibilityConverter}}">
-                <TextBlock Text="Loading calendar events..." FontWeight="SemiBold" />
-            </Border>
+            <Grid Grid.Column="0">
+                <views:DayViewControl Visibility="{Binding ActiveView, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=Day}" />
+                <views:WeekViewControl Visibility="{Binding ActiveView, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=Week}" />
+                <views:WorkWeekViewControl Visibility="{Binding ActiveView, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=WorkWeek}" />
+                <views:MonthViewControl Visibility="{Binding ActiveView, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=Month}" />
 
-            <Border Padding="14"
-                    Background="#AAFFFFFF"
-                    CornerRadius="6"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Visibility="{Binding ShowErrorState, Converter={StaticResource BoolToVisibilityConverter}}">
-                <TextBlock Text="{Binding ErrorMessage}" Foreground="IndianRed" FontWeight="SemiBold" />
-            </Border>
+                <Border Padding="14"
+                        Background="{DynamicResource AppOverlayBackgroundBrush}"
+                        CornerRadius="6"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Visibility="{Binding ShowLoadingState, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <TextBlock Text="Loading calendar events..." FontWeight="SemiBold" />
+                </Border>
 
-            <Border Padding="14"
-                    Background="#AAFFFFFF"
+                <Border Padding="14"
+                        Background="{DynamicResource AppOverlayBackgroundBrush}"
+                        CornerRadius="6"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Visibility="{Binding ShowErrorState, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <TextBlock Text="{Binding ErrorMessage}" Foreground="{DynamicResource AppErrorTextBrush}" FontWeight="SemiBold" />
+                </Border>
+
+                <Border Padding="14"
+                        Background="{DynamicResource AppOverlayBackgroundBrush}"
+                        CornerRadius="6"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Visibility="{Binding ShowEmptyState, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <TextBlock Text="{Binding EmptyStateMessage}" Foreground="{DynamicResource AppSecondaryTextBrush}" FontWeight="SemiBold" />
+                </Border>
+            </Grid>
+
+            <Border Grid.Column="1"
+                    Width="250"
+                    Margin="12,0,0,0"
+                    Padding="10"
+                    Background="{DynamicResource AppPanelBackgroundBrush}"
+                    BorderBrush="{DynamicResource AppBorderBrush}"
+                    BorderThickness="1"
                     CornerRadius="6"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Visibility="{Binding ShowEmptyState, Converter={StaticResource BoolToVisibilityConverter}}">
-                <TextBlock Text="{Binding EmptyStateMessage}" Foreground="DimGray" FontWeight="SemiBold" />
+                    Visibility="{Binding IsSidebarVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock FontWeight="SemiBold"
+                               Text="{Binding CurrentRangeLabel}"
+                               Margin="0,0,0,8" />
+
+                    <Calendar Grid.Row="1"
+                              DisplayDate="{Binding SidebarDisplayMonth, Mode=OneWay}"
+                              SelectedDate="{Binding SidebarDisplayDate, Mode=OneWay}"
+                              IsTodayHighlighted="True"
+                              IsHitTestVisible="False"
+                              Margin="0,0,0,10" />
+
+                    <TextBlock Grid.Row="2" FontWeight="SemiBold" Margin="0,0,0,6" Text="Today's Agenda" />
+                    <ItemsControl Grid.Row="3" ItemsSource="{Binding SidebarTodayAgenda}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Margin="0,0,0,6">
+                                    <TextBlock FontWeight="SemiBold" Text="{Binding Title}" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock FontSize="11" Foreground="{DynamicResource AppSecondaryTextBrush}">
+                                        <Run Text="{Binding TimeLabel}" />
+                                        <Run Text="  " />
+                                        <Run Text="[" />
+                                        <Run Text="{Binding Category}" />
+                                        <Run Text="]" />
+                                    </TextBlock>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <TextBlock Grid.Row="4" FontWeight="SemiBold" Margin="0,10,0,6" Text="Upcoming Events" />
+                    <ItemsControl Grid.Row="5" ItemsSource="{Binding SidebarUpcomingEvents}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Margin="0,0,0,6">
+                                    <TextBlock FontWeight="SemiBold" Text="{Binding Title}" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock FontSize="11" Foreground="{DynamicResource AppSecondaryTextBrush}">
+                                        <Run Text="{Binding TimeLabel}" />
+                                        <Run Text="  " />
+                                        <Run Text="[" />
+                                        <Run Text="{Binding Category}" />
+                                        <Run Text="]" />
+                                    </TextBlock>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
             </Border>
         </Grid>
     </Grid>

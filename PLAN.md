@@ -102,9 +102,17 @@ Replicate functional behaviour from `D:/Development/Repos/rust-calendar` in a Wi
 - [x] Complete release readiness checklist for `v0.4.0`
 - [x] Ship `v0.4.0` and verify CI/release artefacts
 
+### Phase 6 — UX foundation and theming controls (current target)
+
+- [x] Add top-level menu structure with wired and stubbed entries
+- [x] Implement `View -> Themes` mode switching (Light/Dark/System)
+- [x] Persist selected theme mode in settings and apply at startup
+- [x] Apply theme tokens to shell, Day view, and Month view baseline surfaces
+- [x] Implement sidebar visibility toggle and right-docked layout (Phase 6.1)
+
 ## Branching and workflow
 
-- Current implementation branch: `main`
+- Current implementation branch: `feature/phase6-menu-theme-foundation`
 - Mainline branch: `main`
 - Solo developer workflow: PRs are not required; direct branch commits and merges are the default.
 - Startup diagnostics: retained in app startup and global exception paths for Phase 2 troubleshooting.

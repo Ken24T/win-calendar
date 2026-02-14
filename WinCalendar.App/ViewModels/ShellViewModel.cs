@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using WinCalendar.App.Theming;
 using WinCalendar.App.ViewModels.Calendar;
 using WinCalendar.App.ViewModels.Countdown;
 using WinCalendar.Application.Contracts;
@@ -17,6 +18,11 @@ public partial class ShellViewModel : ObservableObject
     private readonly IEventTemplateService _eventTemplateService;
     private readonly ICountdownService _countdownService;
     private readonly IPdfExportService _pdfExportService;
+    private readonly ISettingsService _settingsService;
+
+    private const string ThemeKey = "theme";
+    private const string UseSystemThemeKey = "use_system_theme";
+    private const string ShowSidebarKey = "show_sidebar";
 
     private IReadOnlyList<CalendarEvent> _allEvents = [];
 
@@ -26,7 +32,8 @@ public partial class ShellViewModel : ObservableObject
         ICategoryService categoryService,
         IEventTemplateService eventTemplateService,
         ICountdownService countdownService,
-        IPdfExportService pdfExportService)
+        IPdfExportService pdfExportService,
+        ISettingsService settingsService)
     {
         _eventService = eventService;
         _eventSearchService = eventSearchService;
@@ -34,6 +41,7 @@ public partial class ShellViewModel : ObservableObject
         _eventTemplateService = eventTemplateService;
         _countdownService = countdownService;
         _pdfExportService = pdfExportService;
+        _settingsService = settingsService;
     }
 
     [ObservableProperty]
@@ -51,6 +59,12 @@ public partial class ShellViewModel : ObservableObject
     [ObservableProperty]
     private string? _errorMessage;
 
+    [ObservableProperty]
+    private AppThemeMode _themeMode = AppThemeMode.System;
+
+    [ObservableProperty]
+    private bool _isSidebarVisible = true;
+
     public ObservableCollection<CalendarEvent> DayEvents { get; } = [];
 
     public ObservableCollection<WeekDayColumnViewModel> WeekColumns { get; } = [];
@@ -58,6 +72,10 @@ public partial class ShellViewModel : ObservableObject
     public ObservableCollection<MonthDayCellViewModel> MonthCells { get; } = [];
 
     public ObservableCollection<CountdownCardItemViewModel> CountdownCards { get; } = [];
+
+    public ObservableCollection<SidebarEventItemViewModel> SidebarTodayAgenda { get; } = [];
+
+    public ObservableCollection<SidebarEventItemViewModel> SidebarUpcomingEvents { get; } = [];
 
     public string ActiveViewLabel => $"View: {ActiveView}";
 
@@ -80,12 +98,22 @@ public partial class ShellViewModel : ObservableObject
 
     public bool HasCountdownCards => CountdownCards.Count > 0;
 
+    public bool IsLightThemeSelected => ThemeMode == AppThemeMode.Light;
+
+    public bool IsDarkThemeSelected => ThemeMode == AppThemeMode.Dark;
+
+    public bool IsSystemThemeSelected => ThemeMode == AppThemeMode.System;
+
     public string EmptyStateMessage => ActiveView switch
     {
         CalendarViewType.Day => "No events for this day.",
         CalendarViewType.Month => "No events for this month.",
         _ => "No events for this range."
     };
+
+    public DateTime SidebarDisplayDate => FocusDate.Date;
+
+    public DateTime SidebarDisplayMonth => new(FocusDate.Year, FocusDate.Month, 1);
 
     [RelayCommand]
     private async Task PreviousRangeAsync()
@@ -149,6 +177,24 @@ public partial class ShellViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private async Task SetThemeLightAsync()
+    {
+        await SetThemeModeAsync(AppThemeMode.Light);
+    }
+
+    [RelayCommand]
+    private async Task SetThemeDarkAsync()
+    {
+        await SetThemeModeAsync(AppThemeMode.Dark);
+    }
+
+    [RelayCommand]
+    private async Task SetThemeSystemAsync()
+    {
+        await SetThemeModeAsync(AppThemeMode.System);
+    }
+
+    [RelayCommand]
     private async Task RefreshViewAsync()
     {
         IsLoading = true;
@@ -162,11 +208,14 @@ public partial class ShellViewModel : ObservableObject
             BuildDayEvents();
             BuildWeekColumns();
             BuildMonthCells();
+            BuildSidebarSections();
         }
         catch
         {
             _allEvents = [];
             CountdownCards.Clear();
+            SidebarTodayAgenda.Clear();
+            SidebarUpcomingEvents.Clear();
             BuildDayEvents();
             BuildWeekColumns();
             BuildMonthCells();
@@ -433,6 +482,8 @@ public partial class ShellViewModel : ObservableObject
     {
         OnPropertyChanged(nameof(CurrentRangeLabel));
         OnPropertyChanged(nameof(EmptyStateMessage));
+        OnPropertyChanged(nameof(SidebarDisplayDate));
+        OnPropertyChanged(nameof(SidebarDisplayMonth));
     }
 
     partial void OnActiveViewChanged(CalendarViewType value)
@@ -453,9 +504,140 @@ public partial class ShellViewModel : ObservableObject
         NotifyViewStateChanged();
     }
 
+    partial void OnThemeModeChanged(AppThemeMode value)
+    {
+        OnPropertyChanged(nameof(IsLightThemeSelected));
+        OnPropertyChanged(nameof(IsDarkThemeSelected));
+        OnPropertyChanged(nameof(IsSystemThemeSelected));
+    }
+
+    partial void OnIsSidebarVisibleChanged(bool value)
+    {
+        _ = PersistSidebarVisibilityAsync(value);
+    }
+
     public async Task InitialiseAsync()
     {
+        await LoadAndApplyDisplaySettingsAsync();
         await RefreshViewAsync();
+    }
+
+    private async Task SetThemeModeAsync(AppThemeMode mode)
+    {
+        ThemeMode = mode;
+        ThemeRuntime.Apply(mode);
+        await PersistThemeModeAsync(mode);
+    }
+
+    private async Task LoadAndApplyDisplaySettingsAsync()
+    {
+        var settings = await _settingsService.GetSettingsAsync();
+
+        var useSystemValue = settings
+            .FirstOrDefault(item => string.Equals(item.Key, UseSystemThemeKey, StringComparison.OrdinalIgnoreCase))
+            ?.Value;
+
+        var useSystemTheme = string.Equals(useSystemValue, "1", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(useSystemValue, "true", StringComparison.OrdinalIgnoreCase);
+
+        var mode = AppThemeMode.System;
+        if (!useSystemTheme)
+        {
+            var persistedTheme = settings
+                .FirstOrDefault(item => string.Equals(item.Key, ThemeKey, StringComparison.OrdinalIgnoreCase))
+                ?.Value;
+
+            mode = ThemeRuntime.Parse(persistedTheme);
+            if (mode == AppThemeMode.System)
+            {
+                mode = AppThemeMode.Light;
+            }
+        }
+
+        ThemeMode = mode;
+        ThemeRuntime.Apply(mode);
+
+        var sidebarValue = settings
+            .FirstOrDefault(item => string.Equals(item.Key, ShowSidebarKey, StringComparison.OrdinalIgnoreCase))
+            ?.Value;
+
+        IsSidebarVisible = !string.Equals(sidebarValue, "0", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(sidebarValue, "false", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private async Task PersistThemeModeAsync(AppThemeMode mode)
+    {
+        await _settingsService.SaveSettingAsync(new AppSetting
+        {
+            Key = UseSystemThemeKey,
+            Value = mode == AppThemeMode.System ? "1" : "0"
+        });
+
+        if (mode == AppThemeMode.System)
+        {
+            return;
+        }
+
+        await _settingsService.SaveSettingAsync(new AppSetting
+        {
+            Key = ThemeKey,
+            Value = ThemeRuntime.ToPersistedValue(mode)
+        });
+    }
+
+    private async Task PersistSidebarVisibilityAsync(bool isVisible)
+    {
+        await _settingsService.SaveSettingAsync(new AppSetting
+        {
+            Key = ShowSidebarKey,
+            Value = isVisible ? "1" : "0"
+        });
+    }
+
+    private void BuildSidebarSections()
+    {
+        SidebarTodayAgenda.Clear();
+        SidebarUpcomingEvents.Clear();
+
+        var now = DateTimeOffset.Now;
+        var todayStart = now.Date;
+        var todayEnd = todayStart.AddDays(1).AddTicks(-1);
+
+        var todayItems = _allEvents
+            .Where(item => IsOverlapping(item, todayStart, todayEnd))
+            .OrderBy(item => item.StartDateTime)
+            .ThenBy(item => item.Title)
+            .Take(8)
+            .ToList();
+
+        foreach (var item in todayItems)
+        {
+            SidebarTodayAgenda.Add(new SidebarEventItemViewModel
+            {
+                Title = item.Title,
+                Category = item.Category,
+                TimeLabel = item.IsAllDay ? "All day" : item.StartDateTime.ToString("HH:mm")
+            });
+        }
+
+        var upcomingItems = _allEvents
+            .Where(item => item.StartDateTime > now)
+            .OrderBy(item => item.StartDateTime)
+            .ThenBy(item => item.Title)
+            .Take(10)
+            .ToList();
+
+        foreach (var item in upcomingItems)
+        {
+            SidebarUpcomingEvents.Add(new SidebarEventItemViewModel
+            {
+                Title = item.Title,
+                Category = item.Category,
+                TimeLabel = item.IsAllDay
+                    ? item.StartDateTime.ToString("ddd dd MMM")
+                    : item.StartDateTime.ToString("ddd dd MMM HH:mm")
+            });
+        }
     }
 
     private void NotifyViewStateChanged()

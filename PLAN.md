@@ -81,7 +81,7 @@ Replicate functional behaviour from `D:/Development/Repos/rust-calendar` in a Wi
 - [ ] Resolve any parity deltas found during manual comparison
 - [ ] Add focused regression tests for parity deltas and edge cases
 - [x] Review startup diagnostics retention and tune production logging behaviour
-- [ ] Prepare release notes and version/tag alignment for next ship milestone
+- [x] Prepare release notes and version/tag alignment for next ship milestone (`docs/RELEASE_NOTES_DRAFT_v0.3.0.md`, `docs/PHASE3_RELEASE_READINESS_CHECKLIST.md`)
 
 ## Branching and workflow
 

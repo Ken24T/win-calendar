@@ -14,6 +14,8 @@ internal sealed class CountdownService(ICountdownCardRepository countdownCardRep
             .Where(item => item.IsActive)
             .OrderBy(item => item.SortOrder)
             .ThenBy(item => item.TargetDateTime)
+            .ThenBy(item => item.Title)
+            .ThenBy(item => item.Id)
             .ToList();
     }
 
@@ -25,6 +27,7 @@ internal sealed class CountdownService(ICountdownCardRepository countdownCardRep
             .OrderBy(item => item.SortOrder)
             .ThenBy(item => item.TargetDateTime)
             .ThenBy(item => item.Title)
+            .ThenBy(item => item.Id)
             .ToList();
     }
 

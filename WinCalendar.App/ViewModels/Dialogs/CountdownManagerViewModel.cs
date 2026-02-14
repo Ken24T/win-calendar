@@ -200,6 +200,7 @@ public partial class CountdownManagerViewModel(ICountdownService countdownServic
             .OrderBy(card => card.SortOrder)
             .ThenBy(card => card.TargetDateTime)
             .ThenBy(card => card.Title)
+            .ThenBy(card => card.Id)
             .ToList();
 
         VisibleCountdownCards.Clear();

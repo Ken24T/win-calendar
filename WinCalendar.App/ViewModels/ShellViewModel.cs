@@ -472,6 +472,7 @@ public partial class ShellViewModel : ObservableObject
         {
             var viewModel = new CountdownCardItemViewModel
             {
+                CardId = item.Id,
                 Title = item.Title,
                 TargetDateTime = item.TargetDateTime,
                 TargetDateLabel = item.TargetDateTime.ToString("ddd dd MMM yyyy HH:mm"),
@@ -506,6 +507,7 @@ public partial class ShellViewModel : ObservableObject
             .ThenBy(item => item.SortOrder)
             .ThenBy(item => item.TargetDateTime)
             .ThenBy(item => item.Title)
+            .ThenBy(item => item.CardId)
             .ToList();
 
         if (ordered.Count == CountdownCards.Count && ordered.SequenceEqual(CountdownCards))

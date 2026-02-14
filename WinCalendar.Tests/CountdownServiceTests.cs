@@ -99,6 +99,84 @@ public class CountdownServiceTests
         Assert.Equal("B", cards[2].Title);
     }
 
+    [Fact]
+    public async Task CountdownService_Should_Order_Active_Card_Ties_Deterministically()
+    {
+        var target = new DateTimeOffset(2026, 3, 1, 9, 0, 0, TimeSpan.FromHours(10));
+
+        var cardA = new CountdownCard
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Title = "Same",
+            TargetDateTime = target,
+            SortOrder = 1,
+            IsActive = true
+        };
+
+        var cardB = new CountdownCard
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+            Title = "Same",
+            TargetDateTime = target,
+            SortOrder = 1,
+            IsActive = true
+        };
+
+        var repository = new InMemoryCountdownRepository([cardB, cardA]);
+
+        var services = new ServiceCollection();
+        services.AddSingleton<ICountdownCardRepository>(repository);
+        services.AddApplication();
+
+        using var provider = services.BuildServiceProvider();
+        var service = provider.GetRequiredService<ICountdownService>();
+
+        var cards = await service.GetCountdownCardsAsync();
+
+        Assert.Equal(2, cards.Count);
+        Assert.Equal(cardA.Id, cards[0].Id);
+        Assert.Equal(cardB.Id, cards[1].Id);
+    }
+
+    [Fact]
+    public async Task CountdownService_Should_Order_Management_Ties_Deterministically()
+    {
+        var target = new DateTimeOffset(2026, 3, 1, 9, 0, 0, TimeSpan.FromHours(10));
+
+        var cardA = new CountdownCard
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000010"),
+            Title = "Same",
+            TargetDateTime = target,
+            SortOrder = 3,
+            IsActive = false
+        };
+
+        var cardB = new CountdownCard
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000011"),
+            Title = "Same",
+            TargetDateTime = target,
+            SortOrder = 3,
+            IsActive = true
+        };
+
+        var repository = new InMemoryCountdownRepository([cardB, cardA]);
+
+        var services = new ServiceCollection();
+        services.AddSingleton<ICountdownCardRepository>(repository);
+        services.AddApplication();
+
+        using var provider = services.BuildServiceProvider();
+        var service = provider.GetRequiredService<ICountdownService>();
+
+        var cards = await service.GetCountdownCardsForManagementAsync();
+
+        Assert.Equal(2, cards.Count);
+        Assert.Equal(cardA.Id, cards[0].Id);
+        Assert.Equal(cardB.Id, cards[1].Id);
+    }
+
     private sealed class InMemoryCountdownRepository(IReadOnlyList<CountdownCard> items) : ICountdownCardRepository
     {
         private readonly List<CountdownCard> _items = [.. items];

@@ -6,6 +6,9 @@ namespace WinCalendar.App.ViewModels.Countdown;
 public sealed partial class CountdownCardItemViewModel : ObservableObject
 {
     [ObservableProperty]
+    private Guid _cardId;
+
+    [ObservableProperty]
     private string _title = string.Empty;
 
     [ObservableProperty]

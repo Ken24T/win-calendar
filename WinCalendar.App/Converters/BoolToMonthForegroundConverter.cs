@@ -9,8 +9,8 @@ public sealed class BoolToMonthForegroundConverter : IValueConverter
 {
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        var currentMonthBrush = System.Windows.Application.Current.TryFindResource("AppPrimaryTextBrush") as Brush ?? Brushes.Black;
-        var otherMonthBrush = System.Windows.Application.Current.TryFindResource("AppSecondaryTextBrush") as Brush ?? Brushes.Gray;
+        var currentMonthBrush = System.Windows.Application.Current.TryFindResource("AppPrimaryTextBrush") as Brush ?? SystemColors.ControlTextBrush;
+        var otherMonthBrush = System.Windows.Application.Current.TryFindResource("AppSecondaryTextBrush") as Brush ?? SystemColors.GrayTextBrush;
 
         if (value is bool isCurrentMonth)
         {

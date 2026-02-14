@@ -5,7 +5,9 @@
         Title="Search Events"
         Height="500"
         Width="760"
-        WindowStartupLocation="CenterOwner">
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource AppWindowBackgroundBrush}"
+        Foreground="{DynamicResource AppPrimaryTextBrush}">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
@@ -47,11 +49,11 @@
                        FontWeight="SemiBold"
                        Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}" />
             <TextBlock Text="{Binding ErrorMessage}"
-                       Foreground="IndianRed"
+                       Foreground="{DynamicResource AppErrorTextBrush}"
                        FontWeight="SemiBold"
                        Visibility="{Binding ShowErrorState, Converter={StaticResource BoolToVisibilityConverter}}" />
             <TextBlock Text="No matching events found."
-                       Foreground="DimGray"
+                       Foreground="{DynamicResource AppSecondaryTextBrush}"
                        FontWeight="SemiBold"
                        Visibility="{Binding ShowEmptyState, Converter={StaticResource BoolToVisibilityConverter}}" />
         </StackPanel>

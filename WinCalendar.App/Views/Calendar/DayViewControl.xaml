@@ -3,31 +3,240 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             x:Name="Root"
              mc:Ignorable="d"
+             Loaded="UserControl_Loaded"
+             Unloaded="UserControl_Unloaded"
              d:DesignHeight="480"
              d:DesignWidth="800">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    </UserControl.Resources>
+
     <Grid Background="{DynamicResource AppPanelBackgroundBrush}">
-        <DataGrid ItemsSource="{Binding DayEvents}"
-                  IsReadOnly="True"
-                  AutoGenerateColumns="False"
-                  CanUserAddRows="False"
-                  Background="{DynamicResource AppPanelBackgroundBrush}"
-                  BorderBrush="{DynamicResource AppBorderBrush}">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="When" Binding="{Binding TimeRangeLabel}" Width="3*" />
-                <DataGridTextColumn Header="Title" Binding="{Binding Title}" Width="3*" />
-                <DataGridTextColumn Header="Category" Binding="{Binding Category}" Width="*" />
-                <DataGridTemplateColumn Header="" Width="100">
-                    <DataGridTemplateColumn.CellTemplate>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0"
+                Margin="0,0,0,8"
+                Padding="8"
+                Background="{DynamicResource AppPanelMutedBackgroundBrush}"
+                BorderBrush="{DynamicResource AppBorderBrush}"
+                BorderThickness="1"
+                CornerRadius="4"
+                Visibility="{Binding HasDayAllDayEvents, Converter={StaticResource BoolToVisibilityConverter}}">
+            <StackPanel>
+                <TextBlock FontWeight="SemiBold" Margin="0,0,0,6" Text="All-day" />
+                <ItemsControl ItemsSource="{Binding DayAllDayEvents}">
+                    <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Button Content="Edit"
-                                    Width="72"
-                                    Command="{Binding DataContext.OpenEditEventDialogCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                    CommandParameter="{Binding}" />
+                            <Border Margin="0,0,0,6"
+                                    Padding="8,6"
+                                    Background="{DynamicResource AppPanelBackgroundBrush}"
+                                    BorderBrush="{DynamicResource AppBorderBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="4">
+                                <Border.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Edit"
+                                                  Command="{Binding DataContext.OpenEditEventDialogCommand, Source={x:Reference Root}}"
+                                                  CommandParameter="{Binding}" />
+                                    </ContextMenu>
+                                </Border.ContextMenu>
+                                <Border.InputBindings>
+                                    <MouseBinding MouseAction="LeftDoubleClick"
+                                                  Command="{Binding DataContext.OpenEditEventDialogCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                  CommandParameter="{Binding}" />
+                                </Border.InputBindings>
+                                <DockPanel>
+                                    <TextBlock DockPanel.Dock="Right"
+                                               Foreground="{DynamicResource AppSecondaryTextBrush}">
+                                        <Run Text="[" />
+                                        <Run Text="{Binding Category}" />
+                                        <Run Text="]" />
+                                    </TextBlock>
+                                    <TextBlock FontWeight="SemiBold"
+                                               Text="{Binding Title}"
+                                               TextTrimming="CharacterEllipsis" />
+                                </DockPanel>
+                            </Border>
                         </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-            </DataGrid.Columns>
-        </DataGrid>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </Border>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="64" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Canvas Grid.Column="0" Height="{Binding DayCanvasHeight}" Background="{DynamicResource AppPanelMutedBackgroundBrush}">
+                    <ItemsControl ItemsSource="{Binding DayTimeSegments}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Canvas />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemContainerStyle>
+                            <Style TargetType="ContentPresenter">
+                                <Setter Property="Canvas.Top" Value="{Binding Top}" />
+                            </Style>
+                        </ItemsControl.ItemContainerStyle>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Margin="4,-8,4,0"
+                                           FontSize="11"
+                                           Foreground="{DynamicResource AppSecondaryTextBrush}"
+                                           Text="{Binding Label}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Canvas>
+
+                <Border Grid.Column="1"
+                        BorderBrush="{DynamicResource AppBorderBrush}"
+                        BorderThickness="1"
+                        Background="{DynamicResource AppPanelBackgroundBrush}">
+                    <Grid x:Name="DaySurfaceHost" Height="{Binding DayCanvasHeight}">
+                        <Canvas>
+                            <ItemsControl ItemsSource="{Binding DayTimeSegments}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <Canvas />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemContainerStyle>
+                                    <Style TargetType="ContentPresenter">
+                                        <Setter Property="Canvas.Top" Value="{Binding Top}" />
+                                        <Setter Property="Canvas.Left" Value="0" />
+                                        <Setter Property="Canvas.Right" Value="0" />
+                                    </Style>
+                                </ItemsControl.ItemContainerStyle>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Height="{Binding LineHeight}"
+                                                Opacity="{Binding LineOpacity}"
+                                                Background="{DynamicResource AppBorderBrush}" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <Border Height="2"
+                                    Background="{DynamicResource AppErrorTextBrush}"
+                                    Width="{Binding ElementName=DaySurfaceHost, Path=ActualWidth}"
+                                    Canvas.Left="0"
+                                    Canvas.Top="{Binding CurrentTimeIndicatorTop}"
+                                    Visibility="{Binding ShowCurrentTimeIndicator, Converter={StaticResource BoolToVisibilityConverter}}"
+                                    Panel.ZIndex="20" />
+
+                                <Ellipse Width="8"
+                                     Height="8"
+                                     Fill="{DynamicResource AppErrorTextBrush}"
+                                     Canvas.Left="-4"
+                                     Canvas.Top="{Binding CurrentTimeIndicatorTop}"
+                                     Margin="0,-3,0,0"
+                                     Visibility="{Binding ShowCurrentTimeIndicator, Converter={StaticResource BoolToVisibilityConverter}}"
+                                     Panel.ZIndex="21" />
+
+                            <ItemsControl ItemsSource="{Binding DayEventBlocks}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <Canvas />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemContainerStyle>
+                                    <Style TargetType="ContentPresenter">
+                                        <Setter Property="Canvas.Top" Value="{Binding Top}" />
+                                        <Setter Property="Canvas.Left" Value="0" />
+                                        <Setter Property="Width" Value="{Binding ElementName=DaySurfaceHost, Path=ActualWidth}" />
+                                        <Setter Property="Panel.ZIndex" Value="10" />
+                                    </Style>
+                                </ItemsControl.ItemContainerStyle>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Height="{Binding Height}"
+                                                Margin="8,0,8,0"
+                                                BorderBrush="{DynamicResource AppAccentBrush}"
+                                                BorderThickness="1"
+                                                CornerRadius="4">
+                                            <Border.ContextMenu>
+                                                <ContextMenu>
+                                                    <MenuItem Header="Edit"
+                                                              Command="{Binding DataContext.OpenEditEventDialogCommand, Source={x:Reference Root}}"
+                                                              CommandParameter="{Binding SourceEvent}" />
+                                                </ContextMenu>
+                                            </Border.ContextMenu>
+                                            <Border.InputBindings>
+                                                <MouseBinding MouseAction="LeftDoubleClick"
+                                                              Command="{Binding DataContext.OpenEditEventDialogCommand, Source={x:Reference Root}}"
+                                                              CommandParameter="{Binding SourceEvent}" />
+                                            </Border.InputBindings>
+                                            <Grid ClipToBounds="True">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="{Binding HeaderHeight}" />
+                                                    <RowDefinition Height="*" />
+                                                </Grid.RowDefinitions>
+
+                                                <Border Grid.Row="0"
+                                                        Background="{DynamicResource AppDayEventHeaderBrush}"
+                                                        Padding="8,2,8,2">
+                                                    <StackPanel>
+                                                        <TextBlock FontSize="10"
+                                                                   FontWeight="SemiBold"
+                                                                   Foreground="{DynamicResource AppDayEventHeaderTextBrush}"
+                                                                   Text="{Binding TimeRangeLabel}" />
+                                                        <TextBlock FontWeight="SemiBold"
+                                                                   Foreground="{DynamicResource AppDayEventHeaderTextBrush}"
+                                                                   Text="{Binding Title}"
+                                                                   TextTrimming="CharacterEllipsis" />
+                                                    </StackPanel>
+                                                </Border>
+
+                                                <Border Grid.Row="1"
+                                                        Background="{DynamicResource AppDayEventBodyBrush}"
+                                                        Padding="8,2,8,2"
+                                                        Visibility="{Binding HasBody, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                    <TextBlock FontSize="10"
+                                                               Foreground="{DynamicResource AppDayEventBodyTextBrush}"
+                                                               Text="{Binding Category}" />
+                                                </Border>
+
+                                                <Canvas IsHitTestVisible="False" Panel.ZIndex="5">
+                                                    <ItemsControl ItemsSource="{Binding SegmentSeparatorOffsets}">
+                                                        <ItemsControl.ItemsPanel>
+                                                            <ItemsPanelTemplate>
+                                                                <Canvas />
+                                                            </ItemsPanelTemplate>
+                                                        </ItemsControl.ItemsPanel>
+                                                        <ItemsControl.ItemContainerStyle>
+                                                            <Style TargetType="ContentPresenter">
+                                                                <Setter Property="Canvas.Top" Value="{Binding}" />
+                                                                <Setter Property="Canvas.Left" Value="0" />
+                                                            </Style>
+                                                        </ItemsControl.ItemContainerStyle>
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <Border Height="1"
+                                                                        Width="{Binding ElementName=DaySurfaceHost, Path=ActualWidth}"
+                                                                        Background="{DynamicResource AppDayEventSeparatorBrush}" />
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                </Canvas>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Canvas>
+                    </Grid>
+                </Border>
+            </Grid>
+        </ScrollViewer>
     </Grid>
 </UserControl>

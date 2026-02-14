@@ -27,7 +27,7 @@
                                 <Setter Property="BorderThickness" Value="1" />
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsToday}" Value="True">
-                                        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
+                                        <Setter Property="BorderBrush" Value="{DynamicResource AppAccentBrush}" />
                                         <Setter Property="BorderThickness" Value="2" />
                                     </DataTrigger>
                                 </Style.Triggers>

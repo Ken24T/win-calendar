@@ -15,7 +15,7 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Border BorderBrush="#DDDDDD" BorderThickness="1" Margin="2" Padding="6">
+                    <Border BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="1" Margin="2" Padding="6" Background="{DynamicResource AppPanelBackgroundBrush}">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
@@ -34,7 +34,7 @@
                                                     CommandParameter="{Binding}" />
                                             <StackPanel>
                                                 <TextBlock FontWeight="SemiBold" Text="{Binding Title}" />
-                                                <TextBlock FontSize="11" Foreground="DimGray" Text="{Binding TimeRangeLabel}" />
+                                                <TextBlock FontSize="11" Foreground="{DynamicResource AppSecondaryTextBrush}" Text="{Binding TimeRangeLabel}" />
                                             </StackPanel>
                                         </DockPanel>
                                     </DataTemplate>

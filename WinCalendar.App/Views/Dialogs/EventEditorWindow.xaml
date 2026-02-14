@@ -6,7 +6,9 @@
         Height="760"
         Width="560"
         WindowStartupLocation="CenterOwner"
-        ResizeMode="NoResize">
+        ResizeMode="NoResize"
+        Background="{DynamicResource AppWindowBackgroundBrush}"
+        Foreground="{DynamicResource AppPrimaryTextBrush}">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
         <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
@@ -104,7 +106,7 @@
             </StackPanel>
 
             <CheckBox Grid.Row="7" Grid.Column="1" Margin="0,0,0,8" Content="All day" IsChecked="{Binding IsAllDay}" />
-            <TextBlock Grid.Row="7" Grid.Column="1" Margin="90,4,0,0" FontSize="11" Foreground="DimGray" Text="Time format: HH:mm (24-hour)." />
+            <TextBlock Grid.Row="7" Grid.Column="1" Margin="90,4,0,0" FontSize="11" Foreground="{DynamicResource AppSecondaryTextBrush}" Text="Time format: HH:mm (24-hour)." />
 
             <TextBlock Grid.Row="8" Grid.Column="0" Margin="0,4" Text="Exceptions" />
             <StackPanel Grid.Row="8" Grid.Column="1" Margin="0,0,0,8">
@@ -113,7 +115,7 @@
                          VerticalScrollBarVisibility="Auto"
                          TextWrapping="Wrap"
                          Text="{Binding RecurrenceExceptionsText, UpdateSourceTrigger=PropertyChanged}" />
-                <TextBlock Margin="0,4,0,0" FontSize="11" Foreground="DimGray" Text="Use one date per line (YYYY-MM-DD)." />
+                <TextBlock Margin="0,4,0,0" FontSize="11" Foreground="{DynamicResource AppSecondaryTextBrush}" Text="Use one date per line (YYYY-MM-DD)." />
             </StackPanel>
 
             <TextBlock Grid.Row="9" Grid.Column="0" Margin="0,4" Text="Notes" />

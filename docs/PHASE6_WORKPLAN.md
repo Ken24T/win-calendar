@@ -13,6 +13,7 @@ Establish the first UX/UI modernisation baseline while preserving behaviour pari
 3. Persisted theme mode and startup apply
 4. Day/Month baseline surface tokenisation
 5. Sidebar visibility and position baseline (Phase 6.1)
+6. Comprehensive themed surface compliance pass across all dialogs and views
 
 ## Phase 6 Backlog
 
@@ -42,9 +43,18 @@ Establish the first UX/UI modernisation baseline while preserving behaviour pari
 - [x] Implement right-docked sidebar container
 - [x] Persist sidebar visibility state
 
+## 5) Comprehensive Theme Compliance
+
+- [x] Remove remaining hardcoded view/dialog colours from calendar and dialog XAML
+- [x] Add shared implicit styles for themed controls (input/list/popup/calendar states)
+- [x] Ensure runtime theme application updates all new token brushes
+- [x] Define visual sign-off gate before custom themes
+- [x] Publish checklist: [PHASE6_THEME_VISUAL_SIGNOFF_CHECKLIST.md](PHASE6_THEME_VISUAL_SIGNOFF_CHECKLIST.md)
+
 ## Exit Criteria
 
 - Menu foundation in place with no command regressions
 - Light/Dark/System toggles function and persist across restart
-- Day/Month baseline remains readable in light and dark modes
+- Day/Month/Week/Work Week and core dialogs remain readable in light and dark modes
 - Sidebar plan and acceptance criteria captured for Phase 6.1
+- Theme visual sign-off checklist executed before custom theme implementation

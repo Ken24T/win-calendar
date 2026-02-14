@@ -23,6 +23,11 @@ public partial class ShellViewModel : ObservableObject
     private const string ThemeKey = "theme";
     private const string UseSystemThemeKey = "use_system_theme";
     private const string ShowSidebarKey = "show_sidebar";
+    private const int DaySlotMinutes = 15;
+    private const double DaySlotHeight = 18;
+    private const int DaySlotsPerHour = 60 / DaySlotMinutes;
+    private const int DayTotalSlots = 24 * DaySlotsPerHour;
+    private const double DayMinimumEventHeight = 20;
 
     private IReadOnlyList<CalendarEvent> _allEvents = [];
 
@@ -65,7 +70,22 @@ public partial class ShellViewModel : ObservableObject
     [ObservableProperty]
     private bool _isSidebarVisible = true;
 
+    [ObservableProperty]
+    private double _dayCanvasHeight = DayTotalSlots * DaySlotHeight;
+
+    [ObservableProperty]
+    private double _currentTimeIndicatorTop;
+
+    [ObservableProperty]
+    private bool _showCurrentTimeIndicator;
+
     public ObservableCollection<CalendarEvent> DayEvents { get; } = [];
+
+    public ObservableCollection<CalendarEvent> DayAllDayEvents { get; } = [];
+
+    public ObservableCollection<DayTimeSegmentViewModel> DayTimeSegments { get; } = [];
+
+    public ObservableCollection<DayEventBlockViewModel> DayEventBlocks { get; } = [];
 
     public ObservableCollection<WeekDayColumnViewModel> WeekColumns { get; } = [];
 
@@ -97,6 +117,8 @@ public partial class ShellViewModel : ObservableObject
     public bool ShowEmptyState => !IsLoading && !HasError && !HasVisibleEvents;
 
     public bool HasCountdownCards => CountdownCards.Count > 0;
+
+    public bool HasDayAllDayEvents => DayAllDayEvents.Count > 0;
 
     public bool IsLightThemeSelected => ThemeMode == AppThemeMode.Light;
 
@@ -259,9 +281,14 @@ public partial class ShellViewModel : ObservableObject
     private void BuildDayEvents()
     {
         DayEvents.Clear();
+        DayAllDayEvents.Clear();
+        DayEventBlocks.Clear();
+        BuildDayTimeSegments();
 
         var dayStart = FocusDate.Date;
         var dayEnd = dayStart.AddDays(1).AddTicks(-1);
+        var dayStartOffset = new DateTimeOffset(dayStart, FocusDate.Offset);
+        var dayEndExclusive = dayStartOffset.AddDays(1);
 
         var items = _allEvents
             .Where(item => IsOverlapping(item, dayStart, dayEnd))
@@ -273,6 +300,90 @@ public partial class ShellViewModel : ObservableObject
         foreach (var item in items)
         {
             DayEvents.Add(item);
+
+            if (item.IsAllDay)
+            {
+                DayAllDayEvents.Add(item);
+                continue;
+            }
+
+            var eventStart = item.StartDateTime < dayStartOffset ? dayStartOffset : item.StartDateTime;
+            var eventEnd = item.EndDateTime > dayEndExclusive ? dayEndExclusive : item.EndDateTime;
+            if (eventEnd <= eventStart)
+            {
+                continue;
+            }
+
+            var startMinutes = (eventStart - dayStartOffset).TotalMinutes;
+            var durationMinutes = (eventEnd - eventStart).TotalMinutes;
+            var segmentCount = Math.Max(1, (int)Math.Ceiling(durationMinutes / DaySlotMinutes));
+
+            var top = startMinutes / DaySlotMinutes * DaySlotHeight;
+
+            var height = Math.Max(DayMinimumEventHeight, segmentCount * DaySlotHeight);
+            var headerHeight = segmentCount == 1
+                ? height
+                : Math.Min(DaySlotHeight, height);
+            var bodyHeight = Math.Max(0, height - headerHeight);
+
+            var separatorOffsets = new List<double>();
+            for (var index = 1; index < segmentCount; index++)
+            {
+                separatorOffsets.Add(index * DaySlotHeight);
+            }
+
+            DayEventBlocks.Add(new DayEventBlockViewModel
+            {
+                SourceEvent = item,
+                Title = item.Title,
+                TimeRangeLabel = item.TimeRangeLabel,
+                Category = item.Category,
+                Top = top,
+                Height = height,
+                HeaderHeight = headerHeight,
+                BodyHeight = bodyHeight,
+                SegmentSeparatorOffsets = separatorOffsets
+            });
+        }
+
+        DayCanvasHeight = DayTotalSlots * DaySlotHeight;
+
+        UpdateCurrentTimeIndicator();
+        OnPropertyChanged(nameof(HasDayAllDayEvents));
+    }
+
+    public void UpdateCurrentTimeIndicator()
+    {
+        var now = DateTimeOffset.Now;
+        if (FocusDate.Date != now.Date)
+        {
+            ShowCurrentTimeIndicator = false;
+            return;
+        }
+
+        var minutesSinceMidnight = (now - now.Date).TotalMinutes;
+        CurrentTimeIndicatorTop = minutesSinceMidnight / DaySlotMinutes * DaySlotHeight;
+        ShowCurrentTimeIndicator = CurrentTimeIndicatorTop >= 0 && CurrentTimeIndicatorTop <= DayCanvasHeight;
+    }
+
+    private void BuildDayTimeSegments()
+    {
+        DayTimeSegments.Clear();
+
+        for (var slot = 0; slot <= DayTotalSlots; slot++)
+        {
+            var isHour = slot % DaySlotsPerHour == 0;
+            var minutes = slot * DaySlotMinutes;
+            var hour = Math.Min(23, minutes / 60);
+            var minute = minutes % 60;
+
+            DayTimeSegments.Add(new DayTimeSegmentViewModel
+            {
+                Top = slot * DaySlotHeight,
+                Label = isHour ? $"{hour:00}:{minute:00}" : string.Empty,
+                LineHeight = isHour ? 1.0 : 0.6,
+                LineOpacity = isHour ? 0.52 : 0.32
+            });
         }
     }
 
@@ -484,6 +595,7 @@ public partial class ShellViewModel : ObservableObject
         OnPropertyChanged(nameof(EmptyStateMessage));
         OnPropertyChanged(nameof(SidebarDisplayDate));
         OnPropertyChanged(nameof(SidebarDisplayMonth));
+        UpdateCurrentTimeIndicator();
     }
 
     partial void OnActiveViewChanged(CalendarViewType value)
@@ -645,6 +757,7 @@ public partial class ShellViewModel : ObservableObject
         OnPropertyChanged(nameof(HasError));
         OnPropertyChanged(nameof(HasVisibleEvents));
         OnPropertyChanged(nameof(HasCountdownCards));
+        OnPropertyChanged(nameof(HasDayAllDayEvents));
         OnPropertyChanged(nameof(ShowLoadingState));
         OnPropertyChanged(nameof(ShowErrorState));
         OnPropertyChanged(nameof(ShowEmptyState));

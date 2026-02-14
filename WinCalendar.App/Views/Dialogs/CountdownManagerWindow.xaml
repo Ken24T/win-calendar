@@ -4,7 +4,9 @@
         Title="Countdown Cards"
         Height="560"
         Width="760"
-        WindowStartupLocation="CenterOwner">
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource AppWindowBackgroundBrush}"
+        Foreground="{DynamicResource AppPrimaryTextBrush}">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </Window.Resources>
@@ -56,7 +58,7 @@
                        Grid.Column="0"
                        Grid.ColumnSpan="4"
                        Margin="0,6,0,0"
-                       Foreground="IndianRed"
+                       Foreground="{DynamicResource AppErrorTextBrush}"
                        FontWeight="SemiBold"
                        Text="{Binding ValidationMessage}"
                        Visibility="{Binding HasValidationMessage, Converter={StaticResource BoolToVisibilityConverter}}" />

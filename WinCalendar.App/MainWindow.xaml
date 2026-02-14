@@ -42,7 +42,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Menu Grid.Row="0" Background="{DynamicResource AppPanelBackgroundBrush}">
+        <Menu Grid.Row="0" Background="{DynamicResource AppMenuBackgroundBrush}">
             <MenuItem Header="_File">
                 <MenuItem Header="Export to PDF" Command="{Binding ExportCurrentViewPdfCommand}" />
                 <Separator />
@@ -72,9 +72,9 @@
                     <MenuItem Header="Month" Command="{Binding SetMonthViewCommand}" />
                 </MenuItem>
                 <MenuItem Header="Themes">
-                    <MenuItem Header="Light" Command="{Binding SetThemeLightCommand}" IsCheckable="True" IsChecked="{Binding IsLightThemeSelected}" />
-                    <MenuItem Header="Dark" Command="{Binding SetThemeDarkCommand}" IsCheckable="True" IsChecked="{Binding IsDarkThemeSelected}" />
-                    <MenuItem Header="System" Command="{Binding SetThemeSystemCommand}" IsCheckable="True" IsChecked="{Binding IsSystemThemeSelected}" />
+                    <MenuItem Header="Light" Command="{Binding SetThemeLightCommand}" IsCheckable="True" IsChecked="{Binding IsLightThemeSelected, Mode=OneWay}" />
+                    <MenuItem Header="Dark" Command="{Binding SetThemeDarkCommand}" IsCheckable="True" IsChecked="{Binding IsDarkThemeSelected, Mode=OneWay}" />
+                    <MenuItem Header="System" Command="{Binding SetThemeSystemCommand}" IsCheckable="True" IsChecked="{Binding IsSystemThemeSelected, Mode=OneWay}" />
                     <Separator />
                     <MenuItem Header="Manage Themes..." Command="{Binding OpenThemeManagerDialogCommand}" />
                 </MenuItem>

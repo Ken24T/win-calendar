@@ -12,6 +12,7 @@ Provide a repeatable manual verification flow for the remaining Rust parity chec
 - Rust reference app available for side-by-side comparison
 - Same sample data set loaded in both apps
 - Local timezone and system clock aligned before test run
+- In WinCalendar, click `Load P3 Data` before executing cases (idempotent seed/update)
 
 ## Test Case 1 — Countdown wording thresholds
 
@@ -21,7 +22,7 @@ Verify countdown wording parity for overdue and near-due transitions.
 
 ### Setup
 
-Create these countdown cards in both apps:
+Create these countdown cards in both apps (WinCalendar can be auto-seeded via `Load P3 Data`):
 
 1. Target `now + 50 hours`
 2. Target `now + 26 hours`
@@ -56,7 +57,7 @@ Verify ordering parity when cards have same sort order and close target times.
 
 ### Setup
 
-Create at least 5 cards:
+Create at least 5 cards (WinCalendar can be auto-seeded via `Load P3 Data`):
 
 - 3 cards with same `SortOrder`
 - overlapping target times (same day, within 30 minutes)
@@ -90,7 +91,7 @@ Verify PDF readability and grouping parity under high event density.
 
 ### Setup
 
-Create a week with:
+Create a week with (WinCalendar can be auto-seeded via `Load P3 Data`):
 
 - at least 20 events
 - mixed all-day and timed events
@@ -123,7 +124,7 @@ Verify parity for long text wrapping/truncation behaviour.
 
 ### Setup
 
-Create events with:
+Create events with (WinCalendar can be auto-seeded via `Load P3 Data`):
 
 - title length > 100 chars
 - multiline notes > 300 chars

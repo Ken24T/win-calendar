@@ -75,6 +75,7 @@ Replicate functional behaviour from `D:/Development/Repos/rust-calendar` in a Wi
 
 - [ ] Complete remaining manual parity checks from `docs/PHASE2_MANUAL_PARITY_CHECKLIST.md`
 - [ ] Execute verification runbook `docs/PHASE3_PARITY_VERIFICATION_RUNBOOK.md`
+- [x] Add in-app `Load P3 Data` seed workflow to support repeatable parity verification
 - [ ] Resolve any parity deltas found during manual comparison
 - [ ] Add focused regression tests for parity deltas and edge cases
 - [ ] Review startup diagnostics retention and tune production logging behaviour

@@ -20,6 +20,7 @@ public static class DependencyInjection
         services.AddSingleton<IThemeRepository, SqliteThemeRepository>();
         services.AddSingleton<ICountdownCardRepository, SqliteCountdownCardRepository>();
         services.AddSingleton<IBackupService, DatabaseBackupService>();
+        services.AddSingleton<IPdfExportService, PdfExportService>();
         return services;
     }
 }

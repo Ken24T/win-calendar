@@ -16,6 +16,7 @@ public partial class ShellViewModel : ObservableObject
     private readonly ICategoryService _categoryService;
     private readonly IEventTemplateService _eventTemplateService;
     private readonly ICountdownService _countdownService;
+    private readonly IPdfExportService _pdfExportService;
 
     private IReadOnlyList<CalendarEvent> _allEvents = [];
 
@@ -24,13 +25,15 @@ public partial class ShellViewModel : ObservableObject
         IEventSearchService eventSearchService,
         ICategoryService categoryService,
         IEventTemplateService eventTemplateService,
-        ICountdownService countdownService)
+        ICountdownService countdownService,
+        IPdfExportService pdfExportService)
     {
         _eventService = eventService;
         _eventSearchService = eventSearchService;
         _categoryService = categoryService;
         _eventTemplateService = eventTemplateService;
         _countdownService = countdownService;
+        _pdfExportService = pdfExportService;
     }
 
     [ObservableProperty]

@@ -160,6 +160,8 @@ Use this format for any mismatch found:
 - Proposed fix:
 - Follow-up test added: Yes / No
 
+Record each mismatch in `docs/PHASE3_PARITY_DELTAS.md` using ID format `P3-Dxx`.
+
 ## Completion Criteria
 
 Phase 3 parity verification can be marked complete when:

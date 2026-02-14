@@ -71,22 +71,22 @@ Replicate functional behaviour from `D:/Development/Repos/rust-calendar` in a Wi
 - [x] Additional test coverage and performance checks
 - [x] Manual parity checklist created for Rust-app comparison (see `docs/PHASE2_MANUAL_PARITY_CHECKLIST.md`)
 
-### Phase 3 — Post-parity hardening and release readiness (proposed)
+### Phase 3 — Post-parity hardening and release readiness (completed)
 
-- [ ] Complete remaining manual parity checks from `docs/PHASE2_MANUAL_PARITY_CHECKLIST.md`
-- [ ] Execute verification runbook `docs/PHASE3_PARITY_VERIFICATION_RUNBOOK.md`
+- [x] Complete remaining manual parity checks from `docs/PHASE2_MANUAL_PARITY_CHECKLIST.md`
+- [x] Execute verification runbook `docs/PHASE3_PARITY_VERIFICATION_RUNBOOK.md`
 - [x] Add in-app `Load P3 Data` seed workflow to support repeatable parity verification
 - [x] Create parity delta tracker `docs/PHASE3_PARITY_DELTAS.md`
 - [x] Centralise countdown threshold/status logic and add boundary regression tests
 - [x] Add deterministic countdown tie ordering with regression coverage
-- [ ] Resolve any parity deltas found during manual comparison
+- [x] Resolve any parity deltas found during manual comparison
 - [x] Add focused regression tests for parity deltas and edge cases
 - [x] Review startup diagnostics retention and tune production logging behaviour
 - [x] Prepare release notes and version/tag alignment for next ship milestone (`docs/RELEASE_NOTES_DRAFT_v0.3.0.md`, `docs/PHASE3_RELEASE_READINESS_CHECKLIST.md`)
 
 ## Branching and workflow
 
-- Current implementation branch: `main`
+- Current implementation branch: `feature/phase3-parity-hardening`
 - Mainline branch: `main`
 - Solo developer workflow: PRs are not required; direct branch commits and merges are the default.
 - Startup diagnostics: retained in app startup and global exception paths for Phase 2 troubleshooting.

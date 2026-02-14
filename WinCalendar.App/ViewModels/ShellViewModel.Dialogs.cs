@@ -85,6 +85,22 @@ public partial class ShellViewModel
         window.ShowDialog();
     }
 
+    [RelayCommand]
+    private async Task OpenCountdownManagerDialogAsync()
+    {
+        var viewModel = new CountdownManagerViewModel(_countdownService);
+        await viewModel.InitialiseAsync();
+
+        var window = new CountdownManagerWindow
+        {
+            Owner = System.Windows.Application.Current.MainWindow,
+            DataContext = viewModel
+        };
+
+        window.ShowDialog();
+        await RefreshViewAsync();
+    }
+
     private async Task OpenEventDialogAsync(CalendarEvent? calendarEvent, Window? owner = null, DateTime? newEventDate = null)
     {
         var viewModel = new EventEditorViewModel(_eventService, _categoryService);

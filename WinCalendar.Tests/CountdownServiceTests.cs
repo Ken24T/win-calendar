@@ -177,6 +177,58 @@ public class CountdownServiceTests
         Assert.Equal(cardB.Id, cards[1].Id);
     }
 
+    [Fact]
+    public async Task CountdownService_Should_Keep_Stable_Order_Across_Repeated_Refreshes()
+    {
+        var target = new DateTimeOffset(2026, 8, 15, 9, 0, 0, TimeSpan.FromHours(10));
+
+        var cardA = new CountdownCard
+        {
+            Id = Guid.Parse("10000000-0000-0000-0000-000000000001"),
+            Title = "Same",
+            TargetDateTime = target,
+            SortOrder = 2,
+            IsActive = true
+        };
+
+        var cardB = new CountdownCard
+        {
+            Id = Guid.Parse("10000000-0000-0000-0000-000000000002"),
+            Title = "Same",
+            TargetDateTime = target,
+            SortOrder = 2,
+            IsActive = true
+        };
+
+        var cardC = new CountdownCard
+        {
+            Id = Guid.Parse("10000000-0000-0000-0000-000000000003"),
+            Title = "Later",
+            TargetDateTime = target.AddHours(2),
+            SortOrder = 2,
+            IsActive = true
+        };
+
+        var repository = new InMemoryCountdownRepository([cardC, cardB, cardA]);
+
+        var services = new ServiceCollection();
+        services.AddSingleton<ICountdownCardRepository>(repository);
+        services.AddApplication();
+
+        using var provider = services.BuildServiceProvider();
+        var service = provider.GetRequiredService<ICountdownService>();
+
+        var first = await service.GetCountdownCardsAsync();
+        var second = await service.GetCountdownCardsAsync();
+        var third = await service.GetCountdownCardsAsync();
+
+        var expectedOrder = new[] { cardA.Id, cardB.Id, cardC.Id };
+
+        Assert.Equal(expectedOrder, first.Select(card => card.Id));
+        Assert.Equal(expectedOrder, second.Select(card => card.Id));
+        Assert.Equal(expectedOrder, third.Select(card => card.Id));
+    }
+
     private sealed class InMemoryCountdownRepository(IReadOnlyList<CountdownCard> items) : ICountdownCardRepository
     {
         private readonly List<CountdownCard> _items = [.. items];

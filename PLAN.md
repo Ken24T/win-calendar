@@ -84,19 +84,19 @@ Replicate functional behaviour from `D:/Development/Repos/rust-calendar` in a Wi
 - [x] Review startup diagnostics retention and tune production logging behaviour
 - [x] Prepare release notes and version/tag alignment for next ship milestone (`docs/RELEASE_NOTES_DRAFT_v0.3.0.md`, `docs/PHASE3_RELEASE_READINESS_CHECKLIST.md`)
 
-### Phase 4 — Release execution and quality uplift (current target)
+### Phase 4 — Release execution and quality uplift (completed)
 
 - [x] Execute release checklist and ship `v0.3.0`
 - [x] Finalise release notes and verify release artifact output
 - [x] Post-release stability pass (diagnostics + operational notes)
 - [x] Targeted UX polish for dense calendar and countdown readability
-- [ ] Additional focused regression coverage for high-density and repeated-refresh scenarios
-- [ ] Closeout verification (full build/test/problems pass)
+- [x] Additional focused regression coverage for high-density and repeated-refresh scenarios
+- [x] Closeout verification (full build/test/problems pass)
 - [x] Detailed task tracking in `docs/PHASE4_WORKPLAN.md`
 
 ## Branching and workflow
 
-- Current implementation branch: `feature/phase4-quality-uplift`
+- Current implementation branch: `feature/phase4-regression-closeout`
 - Mainline branch: `main`
 - Solo developer workflow: PRs are not required; direct branch commits and merges are the default.
 - Startup diagnostics: retained in app startup and global exception paths for Phase 2 troubleshooting.

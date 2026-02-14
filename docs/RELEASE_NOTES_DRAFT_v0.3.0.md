@@ -44,8 +44,7 @@ This release focuses on Phase 2 parity completion and Phase 3 hardening foundati
 
 ## Known Follow-up Items
 
-- Continue Phase 4 quality uplift work (focused UX polish and regression expansion).
-- Confirm keyboard shortcuts and dialog workflow consistency after quality updates.
+- Phase 4 closeout completed with focused regression additions and verification pass.
 
 ## Build and Test Baseline
 

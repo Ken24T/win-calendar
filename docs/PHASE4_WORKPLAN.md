@@ -32,13 +32,13 @@ Ship the next stable WinCalendar release and strengthen quality after parity com
 
 - [x] Improve dense Month-cell readability under heavy event load
 - [x] Verify countdown panel readability for long titles and narrow window widths
-- [ ] Confirm keyboard shortcuts + dialog flows remain consistent after recent additions
+- [x] Confirm keyboard shortcuts + dialog flows remain consistent after recent additions
 
 ## 4) Performance + Regression
 
-- [ ] Add one focused regression test around high-density calendar rendering setup data
-- [ ] Add one focused regression test around countdown refresh/order stability over repeated refreshes
-- [ ] Run full build/test/problematics pass before Phase 4 closeout
+- [x] Add one focused regression test around high-density calendar rendering setup data
+- [x] Add one focused regression test around countdown refresh/order stability over repeated refreshes
+- [x] Run full build/test/problematics pass before Phase 4 closeout
 
 ## Exit Criteria
 

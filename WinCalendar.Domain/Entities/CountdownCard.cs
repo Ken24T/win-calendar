@@ -2,6 +2,8 @@ namespace WinCalendar.Domain.Entities;
 
 public sealed class CountdownCard
 {
+    private const int DueSoonThresholdHours = 48;
+
     public Guid Id { get; init; }
 
     public string Title { get; init; } = string.Empty;
@@ -16,39 +18,46 @@ public sealed class CountdownCard
 
     public string BuildRemainingLabel(DateTimeOffset now)
     {
-        var delta = TargetDateTime - now;
+        return BuildPresentation(now).RemainingLabel;
+    }
 
-        if (delta.TotalSeconds < 0)
+    public CountdownCardPresentation BuildPresentation(DateTimeOffset now)
+    {
+        var remaining = TargetDateTime - now;
+
+        if (remaining <= TimeSpan.Zero)
         {
             var elapsed = now - TargetDateTime;
             if (elapsed.TotalDays >= 1)
             {
-                return $"{Math.Floor(elapsed.TotalDays)} days ago";
+                return new CountdownCardPresentation("Overdue", $"{Math.Floor(elapsed.TotalDays)}d overdue", 0);
             }
 
             if (elapsed.TotalHours >= 1)
             {
-                return $"{Math.Floor(elapsed.TotalHours)} hours ago";
+                return new CountdownCardPresentation("Overdue", $"{Math.Floor(elapsed.TotalHours)}h overdue", 0);
             }
 
-            return "elapsed";
+            return new CountdownCardPresentation("Overdue", "Overdue", 0);
         }
 
-        if (delta.TotalDays >= 1)
+        if (remaining.TotalDays >= 1)
         {
-            return $"{Math.Ceiling(delta.TotalDays)} days left";
+            var status = remaining.TotalHours <= DueSoonThresholdHours ? "Due soon" : "Upcoming";
+            var priority = remaining.TotalHours <= DueSoonThresholdHours ? 1 : 2;
+            return new CountdownCardPresentation(status, $"{Math.Floor(remaining.TotalDays)}d {remaining.Hours}h remaining", priority);
         }
 
-        if (delta.TotalHours >= 1)
+        if (remaining.TotalHours >= 1)
         {
-            return $"{Math.Ceiling(delta.TotalHours)} hours left";
+            return new CountdownCardPresentation("Due soon", $"{Math.Floor(remaining.TotalHours)}h {remaining.Minutes}m remaining", 1);
         }
 
-        if (delta.TotalMinutes >= 1)
-        {
-            return $"{Math.Ceiling(delta.TotalMinutes)} minutes left";
-        }
-
-        return "due now";
+        return new CountdownCardPresentation("Due soon", $"{Math.Max(1, remaining.Minutes)}m remaining", 1);
     }
 }
+
+public readonly record struct CountdownCardPresentation(
+    string StatusLabel,
+    string RemainingLabel,
+    int PriorityRank);

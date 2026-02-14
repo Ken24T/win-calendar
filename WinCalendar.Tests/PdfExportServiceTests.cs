@@ -128,4 +128,109 @@ public class PdfExportServiceTests
         Assert.True(File.Exists(outputPath));
         Assert.True(new FileInfo(outputPath).Length > 0);
     }
+
+    [Fact]
+    public async Task PdfExportService_Should_Generate_Pdf_For_Dense_MultiDay_Schedule()
+    {
+        var outputDirectory = Path.Combine(Path.GetTempPath(), "wincalendar-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(outputDirectory);
+        var outputPath = Path.Combine(outputDirectory, "dense-multiday.pdf");
+
+        var services = new ServiceCollection();
+        services.AddApplication();
+        services.AddInfrastructure();
+
+        using var provider = services.BuildServiceProvider();
+        var service = provider.GetRequiredService<IPdfExportService>();
+
+        var offset = TimeSpan.FromHours(10);
+        var events = new List<CalendarEvent>();
+        var categories = new[] { "Work", "Admin", "Personal", "Health" };
+
+        for (var dayIndex = 0; dayIndex < 5; dayIndex++)
+        {
+            var day = new DateTimeOffset(2026, 6, 1 + dayIndex, 0, 0, 0, offset);
+
+            events.Add(new CalendarEvent
+            {
+                Id = Guid.NewGuid(),
+                Title = $"All-day {dayIndex + 1}",
+                StartDateTime = day,
+                EndDateTime = day.AddHours(23).AddMinutes(59),
+                IsAllDay = true,
+                Category = categories[dayIndex % categories.Length]
+            });
+
+            for (var slot = 0; slot < 4; slot++)
+            {
+                var start = day.AddHours(8 + (slot * 2));
+                events.Add(new CalendarEvent
+                {
+                    Id = Guid.NewGuid(),
+                    Title = $"Dense event {dayIndex + 1}-{slot + 1}",
+                    StartDateTime = start,
+                    EndDateTime = start.AddMinutes(75),
+                    Category = categories[(dayIndex + slot) % categories.Length],
+                    Location = $"Room {dayIndex + 1}{slot + 1}",
+                    Notes = "Dense schedule regression case"
+                });
+            }
+        }
+
+        await service.ExportEventsAsync(
+            events,
+            outputPath,
+            "Dense Multi-day Export",
+            CalendarViewType.Week,
+            new DateTimeOffset(2026, 6, 1, 0, 0, 0, offset),
+            new DateTimeOffset(2026, 6, 7, 23, 59, 0, offset));
+
+        Assert.True(File.Exists(outputPath));
+        Assert.True(new FileInfo(outputPath).Length > 0);
+    }
+
+    [Fact]
+    public async Task PdfExportService_Should_Generate_Pdf_When_Start_And_Title_Tie()
+    {
+        var outputDirectory = Path.Combine(Path.GetTempPath(), "wincalendar-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(outputDirectory);
+        var outputPath = Path.Combine(outputDirectory, "tie-order.pdf");
+
+        var services = new ServiceCollection();
+        services.AddApplication();
+        services.AddInfrastructure();
+
+        using var provider = services.BuildServiceProvider();
+        var service = provider.GetRequiredService<IPdfExportService>();
+
+        var offset = TimeSpan.FromHours(10);
+        var start = new DateTimeOffset(2026, 7, 2, 9, 0, 0, offset);
+        var cardA = new CalendarEvent
+        {
+            Id = Guid.Parse("11111111-1111-1111-1111-111111111111"),
+            Title = "Same title",
+            StartDateTime = start,
+            EndDateTime = start.AddHours(1),
+            Category = "Work"
+        };
+        var cardB = new CalendarEvent
+        {
+            Id = Guid.Parse("22222222-2222-2222-2222-222222222222"),
+            Title = "Same title",
+            StartDateTime = start,
+            EndDateTime = start.AddHours(1),
+            Category = "Work"
+        };
+
+        await service.ExportEventsAsync(
+            [cardB, cardA],
+            outputPath,
+            "Tie Export",
+            CalendarViewType.Day,
+            start.Date,
+            start.Date.AddDays(1).AddTicks(-1));
+
+        Assert.True(File.Exists(outputPath));
+        Assert.True(new FileInfo(outputPath).Length > 0);
+    }
 }

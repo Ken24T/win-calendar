@@ -189,6 +189,24 @@ public partial class ShellViewModel : ObservableObject
         await RefreshViewAsync();
     }
 
+    [RelayCommand]
+    private async Task LoadPhase3VerificationDataAsync()
+    {
+        var now = DateTimeOffset.Now;
+
+        foreach (var calendarEvent in BuildPhase3VerificationEvents(now))
+        {
+            await _eventService.SaveEventAsync(calendarEvent);
+        }
+
+        foreach (var countdownCard in BuildPhase3VerificationCountdownCards(now))
+        {
+            await _countdownService.SaveCountdownCardAsync(countdownCard);
+        }
+
+        await RefreshViewAsync();
+    }
+
     private void BuildDayEvents()
     {
         DayEvents.Clear();
@@ -287,6 +305,113 @@ public partial class ShellViewModel : ObservableObject
         return $"{start:dd MMM} - {end:dd MMM yyyy}";
     }
 
+    private static IReadOnlyList<CalendarEvent> BuildPhase3VerificationEvents(DateTimeOffset now)
+    {
+        var startOfWeek = GetStartOfWeek(now.Date);
+        var monday = new DateTimeOffset(startOfWeek, now.Offset);
+
+        var events = new List<CalendarEvent>();
+        var categories = new[] { "Work", "Admin", "Personal", "Health" };
+
+        for (var dayIndex = 0; dayIndex < 5; dayIndex++)
+        {
+            var day = monday.AddDays(dayIndex);
+
+            events.Add(new CalendarEvent
+            {
+                Id = Guid.Parse($"10000000-0000-0000-0000-0000000000{dayIndex + 1:00}"),
+                Title = $"All-day milestone {day:ddd}",
+                StartDateTime = new DateTimeOffset(day.Year, day.Month, day.Day, 0, 0, 0, day.Offset),
+                EndDateTime = new DateTimeOffset(day.Year, day.Month, day.Day, 23, 59, 0, day.Offset),
+                IsAllDay = true,
+                Category = categories[dayIndex % categories.Length]
+            });
+
+            for (var slot = 0; slot < 4; slot++)
+            {
+                var startHour = 8 + (slot * 2);
+                var start = new DateTimeOffset(day.Year, day.Month, day.Day, startHour, 0, 0, day.Offset);
+                var end = start.AddMinutes(75);
+
+                events.Add(new CalendarEvent
+                {
+                    Id = Guid.Parse($"20000000-0000-0000-0000-00000000{dayIndex + 1:00}{slot + 1:00}"),
+                    Title = $"Dense schedule {day:ddd} #{slot + 1}",
+                    StartDateTime = start,
+                    EndDateTime = end,
+                    Category = categories[(dayIndex + slot) % categories.Length],
+                    Location = $"Room {(dayIndex + 1) * 10 + slot}",
+                    Notes = "Verification event for PDF dense-layout parity checks."
+                });
+            }
+        }
+
+        events.Add(new CalendarEvent
+        {
+            Id = Guid.Parse("30000000-0000-0000-0000-000000000001"),
+            Title = "Long title parity event - this title is intentionally very long to validate column wrapping and readability in exported PDF files",
+            StartDateTime = monday.AddDays(2).AddHours(15),
+            EndDateTime = monday.AddDays(2).AddHours(16),
+            Category = "Work",
+            Location = "Conference Room Long-Form",
+            Notes = string.Join("\n", Enumerable.Repeat("Long notes content for Phase 3 parity validation against Rust PDF wrapping behaviour.", 8))
+        });
+
+        return events;
+    }
+
+    private static IReadOnlyList<CountdownCard> BuildPhase3VerificationCountdownCards(DateTimeOffset now)
+    {
+        return
+        [
+            new CountdownCard
+            {
+                Id = Guid.Parse("40000000-0000-0000-0000-000000000001"),
+                Title = "P3 Near-due 50h",
+                TargetDateTime = now.AddHours(50),
+                ColourHex = "#2D6CDF",
+                IsActive = true,
+                SortOrder = 10
+            },
+            new CountdownCard
+            {
+                Id = Guid.Parse("40000000-0000-0000-0000-000000000002"),
+                Title = "P3 Near-due 26h",
+                TargetDateTime = now.AddHours(26),
+                ColourHex = "#0C8A43",
+                IsActive = true,
+                SortOrder = 10
+            },
+            new CountdownCard
+            {
+                Id = Guid.Parse("40000000-0000-0000-0000-000000000003"),
+                Title = "P3 Due soon 45m",
+                TargetDateTime = now.AddMinutes(45),
+                ColourHex = "#A07000",
+                IsActive = true,
+                SortOrder = 10
+            },
+            new CountdownCard
+            {
+                Id = Guid.Parse("40000000-0000-0000-0000-000000000004"),
+                Title = "P3 Overdue 20m",
+                TargetDateTime = now.AddMinutes(-20),
+                ColourHex = "#B42318",
+                IsActive = true,
+                SortOrder = 10
+            },
+            new CountdownCard
+            {
+                Id = Guid.Parse("40000000-0000-0000-0000-000000000005"),
+                Title = "P3 Inactive tie",
+                TargetDateTime = now.AddHours(26),
+                ColourHex = "#6941C6",
+                IsActive = false,
+                SortOrder = 10
+            }
+        ];
+    }
+
     private static bool IsOverlapping(CalendarEvent calendarEvent, DateTimeOffset start, DateTimeOffset end)
     {
         return calendarEvent.StartDateTime <= end && calendarEvent.EndDateTime >= start;
@@ -347,6 +472,7 @@ public partial class ShellViewModel : ObservableObject
         {
             var viewModel = new CountdownCardItemViewModel
             {
+                CardId = item.Id,
                 Title = item.Title,
                 TargetDateTime = item.TargetDateTime,
                 TargetDateLabel = item.TargetDateTime.ToString("ddd dd MMM yyyy HH:mm"),
@@ -381,6 +507,7 @@ public partial class ShellViewModel : ObservableObject
             .ThenBy(item => item.SortOrder)
             .ThenBy(item => item.TargetDateTime)
             .ThenBy(item => item.Title)
+            .ThenBy(item => item.CardId)
             .ToList();
 
         if (ordered.Count == CountdownCards.Count && ordered.SequenceEqual(CountdownCards))

@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using WinCalendar.Application;
@@ -17,6 +18,10 @@ public partial class App : System.Windows.Application
 
 	public App()
 	{
+		var diagnosticsVerbose = Debugger.IsAttached ||
+			string.Equals(Environment.GetEnvironmentVariable("WINCALENDAR_DIAGNOSTICS_VERBOSE"), "1", StringComparison.Ordinal);
+		StartupDiagnostics.Initialise(enableInfoLogging: diagnosticsVerbose);
+
 		RegisterGlobalExceptionHandlers();
 		StartupDiagnostics.WriteInfo("App constructor started.");
 

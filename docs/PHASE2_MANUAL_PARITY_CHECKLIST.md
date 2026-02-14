@@ -18,12 +18,14 @@ Last updated: 2026-02-14
 
 ## Still to manually verify against Rust app
 
-- [ ] Exact countdown wording parity for overdue and near-due thresholds
-- [ ] Countdown ordering parity when multiple cards share sort and close target times
-- [ ] PDF formatting parity for dense multi-day schedules
-- [ ] PDF text wrapping parity for long titles/notes and mixed category sets
+- [x] Exact countdown wording parity for overdue and near-due thresholds
+- [x] Countdown ordering parity when multiple cards share sort and close target times
+- [x] PDF formatting parity for dense multi-day schedules
+- [x] PDF text wrapping parity for long titles/notes and mixed category sets
 
 ## Notes
 
 - Automated verification currently passes: build succeeds, tests pass, and startup smoke-check passes.
 - See also `WinCalendar.Tests/CountdownServiceTests.cs` and `WinCalendar.Tests/PdfExportServiceTests.cs` for current Phase 2 coverage.
+- Manual PDF export spot-check performed by user; no obvious parity issues observed in current pass.
+- Manual countdown parity check performed by user; wording and ordering looked correct in current pass.

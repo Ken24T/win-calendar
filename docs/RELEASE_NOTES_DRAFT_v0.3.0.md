@@ -44,8 +44,8 @@ This release focuses on Phase 2 parity completion and Phase 3 hardening foundati
 
 ## Known Follow-up Items
 
-- Complete remaining manual parity checks listed in `docs/PHASE2_MANUAL_PARITY_CHECKLIST.md`.
-- Resolve or accept all open entries in `docs/PHASE3_PARITY_DELTAS.md` before finalising release.
+- Complete ship version bump/tag/push sequence for `v0.3.0`.
+- Verify release workflow artifact upload on tagged release run.
 
 ## Build and Test Baseline
 

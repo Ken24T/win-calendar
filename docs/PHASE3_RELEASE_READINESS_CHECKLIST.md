@@ -14,11 +14,11 @@ Checklist for preparing the next WinCalendar release after Phase 3 parity harden
 
 ## Pre-release Gates
 
-- [ ] Build succeeds locally (`dotnet build WinCalendar.sln`)
-- [ ] Full test suite passes (`dotnet test WinCalendar.sln`)
-- [ ] Problems panel is clean
-- [ ] Remaining Phase 3 parity checks completed in `docs/PHASE2_MANUAL_PARITY_CHECKLIST.md`
-- [ ] All active deltas in `docs/PHASE3_PARITY_DELTAS.md` moved to `Resolved` or `Accepted`
+- [x] Build succeeds locally (`dotnet build WinCalendar.sln`)
+- [x] Full test suite passes (`dotnet test WinCalendar.sln`)
+- [x] Problems panel is clean
+- [x] Remaining Phase 3 parity checks completed in `docs/PHASE2_MANUAL_PARITY_CHECKLIST.md`
+- [x] All active deltas in `docs/PHASE3_PARITY_DELTAS.md` moved to `Resolved` or `Accepted`
 
 ## Version Alignment
 
@@ -38,14 +38,14 @@ Release workflow accepts tags:
 
 Verification in `.github/workflows/release.yml` strips optional leading `v` and compares against `Directory.Build.props`.
 
-- [ ] Choose tag format (`v0.3.0` recommended)
+- [x] Choose tag format (`v0.3.0` recommended)
 - [ ] Confirm tag points to commit that introduces version bump
 
 ## Release Notes
 
-- [ ] Finalise draft notes in `docs/RELEASE_NOTES_DRAFT_v0.3.0.md`
-- [ ] Confirm user-facing wording uses Australian English
-- [ ] Confirm notable fixes/features map to shipped commits
+- [x] Finalise draft notes in `docs/RELEASE_NOTES_DRAFT_v0.3.0.md`
+- [x] Confirm user-facing wording uses Australian English
+- [x] Confirm notable fixes/features map to shipped commits
 
 ## Publish Sequence (TCTBP-aligned)
 

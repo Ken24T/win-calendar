@@ -81,19 +81,24 @@
                 <ItemsControl ItemsSource="{Binding CountdownCards}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <StackPanel Orientation="Horizontal" />
+                            <WrapPanel />
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border Width="210"
-                                    Margin="0,0,10,0"
+                            <Border MinWidth="180"
+                                    MaxWidth="240"
+                                    Margin="0,0,10,10"
                                     Padding="10"
                                     BorderBrush="{Binding ColourHex}"
                                     BorderThickness="2"
                                     CornerRadius="6">
                                 <StackPanel>
-                                    <TextBlock FontWeight="SemiBold" Text="{Binding Title}" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock FontWeight="SemiBold"
+                                               Text="{Binding Title}"
+                                               TextWrapping="Wrap"
+                                               TextTrimming="CharacterEllipsis"
+                                               MaxHeight="34" />
                                     <TextBlock Margin="0,4,0,0" FontSize="11" FontWeight="SemiBold" Foreground="DimGray" Text="{Binding StatusLabel}" />
                                     <TextBlock Margin="0,6,0,0" Foreground="DimGray" Text="{Binding TargetDateLabel}" />
                                     <TextBlock Margin="0,6,0,0" FontWeight="SemiBold" Text="{Binding RemainingLabel}" />

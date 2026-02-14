@@ -92,6 +92,13 @@ public partial class App : System.Windows.Application
 	{
 		DispatcherUnhandledException += (_, args) =>
 		{
+			if (IsNonCriticalException(args.Exception))
+			{
+				StartupDiagnostics.WriteInfo($"Ignored non-critical dispatcher exception: {args.Exception.Message}");
+				args.Handled = true;
+				return;
+			}
+
 			StartupDiagnostics.WriteError("Dispatcher unhandled exception.", args.Exception);
 			MessageBox.Show(
 				$"Unexpected UI error:\n\n{args.Exception.Message}\n\nDiagnostics log:\n{StartupDiagnostics.LogPath}",
@@ -115,9 +122,21 @@ public partial class App : System.Windows.Application
 
 		TaskScheduler.UnobservedTaskException += (_, args) =>
 		{
+			if (IsNonCriticalException(args.Exception))
+			{
+				StartupDiagnostics.WriteInfo($"Ignored non-critical task exception: {args.Exception.Message}");
+				args.SetObserved();
+				return;
+			}
+
 			StartupDiagnostics.WriteError("Unobserved task exception.", args.Exception);
 			args.SetObserved();
 		};
+	}
+
+	private static bool IsNonCriticalException(Exception exception)
+	{
+		return exception is OperationCanceledException or TaskCanceledException;
 	}
 }
 

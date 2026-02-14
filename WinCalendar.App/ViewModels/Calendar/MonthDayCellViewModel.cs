@@ -12,4 +12,6 @@ public sealed class MonthDayCellViewModel
     public bool IsToday { get; init; }
 
     public ObservableCollection<CalendarEvent> Events { get; init; } = [];
+
+    public string HiddenEventsLabel { get; init; } = string.Empty;
 }

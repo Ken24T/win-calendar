@@ -274,15 +274,21 @@ public partial class ShellViewModel : ObservableObject
                 .OrderByDescending(item => item.IsAllDay)
                 .ThenBy(item => item.StartDateTime)
                 .ThenBy(item => item.Title)
+                .ToList();
+
+            var visibleEvents = events
                 .Take(3)
                 .ToList();
+
+            var hiddenCount = Math.Max(0, events.Count - visibleEvents.Count);
 
             MonthCells.Add(new MonthDayCellViewModel
             {
                 Date = cellDate,
                 IsCurrentMonth = cellDate.Month == firstDayOfMonth.Month,
                 IsToday = cellDate == DateTime.Today,
-                Events = new ObservableCollection<CalendarEvent>(events)
+                Events = new ObservableCollection<CalendarEvent>(visibleEvents),
+                HiddenEventsLabel = hiddenCount > 0 ? $"+{hiddenCount} more" : string.Empty
             });
         }
     }

@@ -9,8 +9,8 @@ Checklist for preparing the next WinCalendar release after Phase 3 parity harden
 ## Current Version Baseline
 
 - Source of truth: `Directory.Build.props`
-- Current version: `0.2.0`
-- Next planned release target: `0.3.0` (first SHIP on Phase 3 branch, per TCTBP minor bump rule)
+- Current version: `0.3.0`
+- Next planned release target: `0.4.0`
 
 ## Pre-release Gates
 
@@ -22,12 +22,12 @@ Checklist for preparing the next WinCalendar release after Phase 3 parity harden
 
 ## Version Alignment
 
-- [ ] Update `Directory.Build.props`:
+- [x] Update `Directory.Build.props`:
   - `Version`
   - `AssemblyVersion`
   - `FileVersion`
   - `InformationalVersion`
-- [ ] Confirm release tag value matches `Version` exactly
+- [x] Confirm release tag value matches `Version` exactly
 
 ## Tag and Workflow Compatibility
 
@@ -38,8 +38,8 @@ Release workflow accepts tags:
 
 Verification in `.github/workflows/release.yml` strips optional leading `v` and compares against `Directory.Build.props`.
 
-- [x] Choose tag format (`v0.3.0` recommended)
-- [ ] Confirm tag points to commit that introduces version bump
+- [x] Choose tag format (`0.3.0`)
+- [x] Confirm tag points to commit that introduces version bump
 
 ## Release Notes
 
@@ -57,10 +57,10 @@ Verification in `.github/workflows/release.yml` strips optional leading `v` and 
 6. Tag
 7. Push
 
-- [ ] Execute publish sequence on approved ship command
+- [x] Execute publish sequence on approved ship command
 
 ## Post-release Verification
 
-- [ ] CI workflow green on `main`
-- [ ] Release workflow artifact uploaded successfully
-- [ ] Local branch sync complete
+- [x] CI workflow green on `main`
+- [x] Release workflow artifact uploaded successfully (`wincalendar-0.3.0`)
+- [x] Local branch sync complete

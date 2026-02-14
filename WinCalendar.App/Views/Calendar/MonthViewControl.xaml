@@ -37,6 +37,7 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
                             <Button Content="{Binding Date.Day}"
                                     HorizontalAlignment="Left"
@@ -62,6 +63,12 @@
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
+                            <TextBlock Grid.Row="2"
+                                       Margin="0,4,0,0"
+                                       FontSize="10"
+                                       FontWeight="SemiBold"
+                                       Foreground="DimGray"
+                                       Text="{Binding HiddenEventsLabel}" />
                         </Grid>
                     </Border>
                 </DataTemplate>

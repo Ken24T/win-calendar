@@ -19,8 +19,8 @@ Capture WinCalendar vs Rust parity mismatches discovered during Phase 3 verifica
 |---|---|---|---|---|---|---|---|---|---|
 | P3-D01 | Countdown wording | Overdue threshold text | _TBD during manual pass_ | _TBD during manual pass_ | Medium | Open | - | - | Seed via `Load P3 Data` |
 | P3-D02 | Countdown ordering | Tie ordering with same sort/time | _TBD during manual pass_ | _TBD during manual pass_ | Medium | Open | - | - | Validate manager + shell panel |
-| P3-D03 | PDF dense layout | High-volume week export readability | _TBD during manual pass_ | _TBD during manual pass_ | Medium | Open | - | - | Compare week + work week exports |
-| P3-D04 | PDF wrapping | Long title/notes wrapping | _TBD during manual pass_ | _TBD during manual pass_ | Medium | Open | - | - | Validate day + month exports |
+| P3-D03 | PDF dense layout | High-volume week export readability | Readable grouped output under dense schedules | User manual spot-check reported output looks ok | Medium | Resolved | User + Copilot | `ebc3c08` | Validate week/work-week exports in broader pass if needed |
+| P3-D04 | PDF wrapping | Long title/notes wrapping | Long text should remain readable without broken layout | User manual spot-check reported output looks ok | Medium | Resolved | User + Copilot | `ebc3c08` | Validate day/month exports in broader pass if needed |
 | P3-D05 | P3 data seeding | Load P3 Data action should complete without runtime errors | Seed operation succeeds | Runtime error: invalid GUID format from dense-event seed ID | High | Resolved | Copilot | `810f210` | Re-verified successfully after fix |
 
 ## Re-Verification Log
@@ -28,6 +28,8 @@ Capture WinCalendar vs Rust parity mismatches discovered during Phase 3 verifica
 | Delta ID | Re-test Date | Result | Verified By | Evidence |
 |---|---|---|---|---|
 | P3-D05 | 2026-02-14 | Pass | User + Copilot | Manual rerun of `Load P3 Data` after fix; app remains stable |
+| P3-D03 | 2026-02-14 | Pass | User | Manual PDF export spot-check looked correct |
+| P3-D04 | 2026-02-14 | Pass | User | Manual PDF export spot-check looked correct |
 
 ## Exit Criteria
 

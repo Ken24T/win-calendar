@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using WinCalendar.App.ViewModels.Calendar;
+using WinCalendar.App.ViewModels.Countdown;
 using WinCalendar.Application.Contracts;
 using WinCalendar.Domain.Entities;
 using WinCalendar.Domain.Enums;
@@ -14,6 +15,8 @@ public partial class ShellViewModel : ObservableObject
     private readonly IEventSearchService _eventSearchService;
     private readonly ICategoryService _categoryService;
     private readonly IEventTemplateService _eventTemplateService;
+    private readonly ICountdownService _countdownService;
+    private readonly IPdfExportService _pdfExportService;
 
     private IReadOnlyList<CalendarEvent> _allEvents = [];
 
@@ -21,12 +24,16 @@ public partial class ShellViewModel : ObservableObject
         IEventService eventService,
         IEventSearchService eventSearchService,
         ICategoryService categoryService,
-        IEventTemplateService eventTemplateService)
+        IEventTemplateService eventTemplateService,
+        ICountdownService countdownService,
+        IPdfExportService pdfExportService)
     {
         _eventService = eventService;
         _eventSearchService = eventSearchService;
         _categoryService = categoryService;
         _eventTemplateService = eventTemplateService;
+        _countdownService = countdownService;
+        _pdfExportService = pdfExportService;
     }
 
     [ObservableProperty]
@@ -50,6 +57,8 @@ public partial class ShellViewModel : ObservableObject
 
     public ObservableCollection<MonthDayCellViewModel> MonthCells { get; } = [];
 
+    public ObservableCollection<CountdownCardItemViewModel> CountdownCards { get; } = [];
+
     public string ActiveViewLabel => $"View: {ActiveView}";
 
     public string CurrentRangeLabel => BuildCurrentRangeLabel();
@@ -68,6 +77,8 @@ public partial class ShellViewModel : ObservableObject
     public bool ShowErrorState => HasError;
 
     public bool ShowEmptyState => !IsLoading && !HasError && !HasVisibleEvents;
+
+    public bool HasCountdownCards => CountdownCards.Count > 0;
 
     public string EmptyStateMessage => ActiveView switch
     {
@@ -146,6 +157,7 @@ public partial class ShellViewModel : ObservableObject
         try
         {
             _allEvents = await _eventService.GetEventsAsync();
+            await LoadCountdownCardsAsync();
 
             BuildDayEvents();
             BuildWeekColumns();
@@ -154,6 +166,7 @@ public partial class ShellViewModel : ObservableObject
         catch
         {
             _allEvents = [];
+            CountdownCards.Clear();
             BuildDayEvents();
             BuildWeekColumns();
             BuildMonthCells();
@@ -318,8 +331,67 @@ public partial class ShellViewModel : ObservableObject
     {
         OnPropertyChanged(nameof(HasError));
         OnPropertyChanged(nameof(HasVisibleEvents));
+        OnPropertyChanged(nameof(HasCountdownCards));
         OnPropertyChanged(nameof(ShowLoadingState));
         OnPropertyChanged(nameof(ShowErrorState));
         OnPropertyChanged(nameof(ShowEmptyState));
+    }
+
+    private async Task LoadCountdownCardsAsync()
+    {
+        CountdownCards.Clear();
+
+        var items = await _countdownService.GetCountdownCardsAsync();
+
+        foreach (var item in items)
+        {
+            var viewModel = new CountdownCardItemViewModel
+            {
+                Title = item.Title,
+                TargetDateTime = item.TargetDateTime,
+                TargetDateLabel = item.TargetDateTime.ToString("ddd dd MMM yyyy HH:mm"),
+                ColourHex = item.ColourHex,
+                SortOrder = item.SortOrder
+            };
+
+            viewModel.UpdateRemainingLabel(DateTimeOffset.Now);
+            CountdownCards.Add(viewModel);
+        }
+
+        ApplyCountdownOrdering();
+
+        OnPropertyChanged(nameof(HasCountdownCards));
+    }
+
+    public void RefreshCountdownLabels()
+    {
+        var now = DateTimeOffset.Now;
+        foreach (var card in CountdownCards)
+        {
+            card.UpdateRemainingLabel(now);
+        }
+
+        ApplyCountdownOrdering();
+    }
+
+    private void ApplyCountdownOrdering()
+    {
+        var ordered = CountdownCards
+            .OrderBy(item => item.PriorityRank)
+            .ThenBy(item => item.SortOrder)
+            .ThenBy(item => item.TargetDateTime)
+            .ThenBy(item => item.Title)
+            .ToList();
+
+        if (ordered.Count == CountdownCards.Count && ordered.SequenceEqual(CountdownCards))
+        {
+            return;
+        }
+
+        CountdownCards.Clear();
+        foreach (var item in ordered)
+        {
+            CountdownCards.Add(item);
+        }
     }
 }

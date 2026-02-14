@@ -35,6 +35,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
@@ -53,6 +54,8 @@
                 <Button Width="160" Margin="0,0,8,0" Content="Load Sample Events" Command="{Binding LoadSampleEventsCommand}" />
                 <Button Width="110" Margin="0,0,8,0" Content="New Event" Command="{Binding OpenNewEventDialogCommand}" />
                 <Button Width="90" Margin="0,0,8,0" Content="Search" Command="{Binding OpenSearchDialogCommand}" />
+                <Button Width="90" Margin="0,0,8,0" Content="Export PDF" Command="{Binding ExportCurrentViewPdfCommand}" />
+                <Button Width="100" Margin="0,0,8,0" Content="Countdown" Command="{Binding OpenCountdownManagerDialogCommand}" />
                 <Button Width="100" Margin="0,0,8,0" Content="Categories" Command="{Binding OpenCategoryManagerDialogCommand}" />
                 <Button Width="95" Content="Templates" Command="{Binding OpenTemplateManagerDialogCommand}" />
             </StackPanel>
@@ -65,7 +68,43 @@
             </StackPanel>
         </DockPanel>
 
-        <Grid Grid.Row="3">
+        <Border Grid.Row="3"
+                Margin="0,0,0,10"
+                Padding="10"
+                BorderBrush="#DDDDDD"
+                BorderThickness="1"
+                CornerRadius="6"
+                Visibility="{Binding HasCountdownCards, Converter={StaticResource BoolToVisibilityConverter}}">
+            <StackPanel>
+                <TextBlock FontWeight="SemiBold" Margin="0,0,0,8" Text="Countdown" />
+                <ItemsControl ItemsSource="{Binding CountdownCards}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Width="210"
+                                    Margin="0,0,10,0"
+                                    Padding="10"
+                                    BorderBrush="{Binding ColourHex}"
+                                    BorderThickness="2"
+                                    CornerRadius="6">
+                                <StackPanel>
+                                    <TextBlock FontWeight="SemiBold" Text="{Binding Title}" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Margin="0,4,0,0" FontSize="11" FontWeight="SemiBold" Foreground="DimGray" Text="{Binding StatusLabel}" />
+                                    <TextBlock Margin="0,6,0,0" Foreground="DimGray" Text="{Binding TargetDateLabel}" />
+                                    <TextBlock Margin="0,6,0,0" FontWeight="SemiBold" Text="{Binding RemainingLabel}" />
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </Border>
+
+        <Grid Grid.Row="4">
             <views:DayViewControl Visibility="{Binding ActiveView, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=Day}" />
             <views:WeekViewControl Visibility="{Binding ActiveView, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=Week}" />
             <views:WorkWeekViewControl Visibility="{Binding ActiveView, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=WorkWeek}" />

@@ -1,8 +1,10 @@
 using System.Windows;
+using Microsoft.Win32;
 using CommunityToolkit.Mvvm.Input;
 using WinCalendar.App.ViewModels.Dialogs;
 using WinCalendar.App.Views.Dialogs;
 using WinCalendar.Domain.Entities;
+using WinCalendar.Domain.Enums;
 
 namespace WinCalendar.App.ViewModels;
 
@@ -83,6 +85,80 @@ public partial class ShellViewModel
         };
 
         window.ShowDialog();
+    }
+
+    [RelayCommand]
+    private async Task OpenCountdownManagerDialogAsync()
+    {
+        var viewModel = new CountdownManagerViewModel(_countdownService);
+        await viewModel.InitialiseAsync();
+
+        var window = new CountdownManagerWindow
+        {
+            Owner = System.Windows.Application.Current.MainWindow,
+            DataContext = viewModel
+        };
+
+        window.ShowDialog();
+        await RefreshViewAsync();
+    }
+
+    [RelayCommand]
+    private async Task ExportCurrentViewPdfAsync()
+    {
+        var saveFileDialog = new SaveFileDialog
+        {
+            Title = "Export Calendar PDF",
+            Filter = "PDF files (*.pdf)|*.pdf",
+            DefaultExt = "pdf",
+            AddExtension = true,
+            FileName = $"wincalendar-{DateTimeOffset.Now:yyyyMMdd-HHmm}.pdf"
+        };
+
+        if (saveFileDialog.ShowDialog(System.Windows.Application.Current.MainWindow) != true)
+        {
+            return;
+        }
+
+        var (rangeStart, rangeEnd) = GetCurrentRangeBounds();
+        var eventsInRange = _allEvents
+            .Where(item => item.StartDateTime <= rangeEnd && item.EndDateTime >= rangeStart)
+            .OrderBy(item => item.StartDateTime)
+            .ToList();
+
+        var title = $"WinCalendar Export - {CurrentRangeLabel}";
+        await _pdfExportService.ExportEventsAsync(
+            eventsInRange,
+            saveFileDialog.FileName,
+            title,
+            ActiveView,
+            rangeStart,
+            rangeEnd);
+    }
+
+    private (DateTimeOffset Start, DateTimeOffset End) GetCurrentRangeBounds()
+    {
+        var startOfDay = new DateTimeOffset(FocusDate.Date, FocusDate.Offset);
+
+        return ActiveView switch
+        {
+            CalendarViewType.Day => (startOfDay, startOfDay.AddDays(1).AddTicks(-1)),
+            CalendarViewType.Month =>
+                (
+                    new DateTimeOffset(new DateTime(FocusDate.Year, FocusDate.Month, 1), FocusDate.Offset),
+                    new DateTimeOffset(new DateTime(FocusDate.Year, FocusDate.Month, 1), FocusDate.Offset).AddMonths(1).AddTicks(-1)
+                ),
+            CalendarViewType.WorkWeek =>
+                (
+                    startOfDay.AddDays(-((7 + (startOfDay.DayOfWeek - DayOfWeek.Monday)) % 7)),
+                    startOfDay.AddDays(-((7 + (startOfDay.DayOfWeek - DayOfWeek.Monday)) % 7)).AddDays(5).AddTicks(-1)
+                ),
+            _ =>
+                (
+                    startOfDay.AddDays(-((7 + (startOfDay.DayOfWeek - DayOfWeek.Monday)) % 7)),
+                    startOfDay.AddDays(-((7 + (startOfDay.DayOfWeek - DayOfWeek.Monday)) % 7)).AddDays(7).AddTicks(-1)
+                )
+        };
     }
 
     private async Task OpenEventDialogAsync(CalendarEvent? calendarEvent, Window? owner = null, DateTime? newEventDate = null)

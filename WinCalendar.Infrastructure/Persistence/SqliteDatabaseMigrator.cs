@@ -66,6 +66,24 @@ internal sealed class SqliteDatabaseMigrator(SqliteConnectionFactory connectionF
                 created_utc TEXT NOT NULL
             );
             """
+        ),
+        (
+            "002_countdown_cards",
+            """
+            CREATE TABLE IF NOT EXISTS countdown_cards (
+                id TEXT PRIMARY KEY,
+                title TEXT NOT NULL,
+                target_datetime TEXT NOT NULL,
+                colour_hex TEXT NOT NULL DEFAULT '#2D6CDF',
+                is_active INTEGER NOT NULL DEFAULT 1,
+                sort_order INTEGER NOT NULL DEFAULT 0,
+                created_utc TEXT NOT NULL,
+                updated_utc TEXT NOT NULL
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_countdown_cards_target_datetime ON countdown_cards(target_datetime);
+            CREATE INDEX IF NOT EXISTS idx_countdown_cards_sort_order ON countdown_cards(sort_order);
+            """
         )
     ];
 

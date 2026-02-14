@@ -64,17 +64,19 @@ Replicate functional behaviour from `D:/Development/Repos/rust-calendar` in a Wi
 - [x] Import fixtures and conversion tests
 - [x] Manual parity checklist against Rust app (see `docs/PHASE1_MANUAL_PARITY_CHECKLIST.md`)
 
-### Phase 2 — Extended parity (current target)
+### Phase 2 — Extended parity (completed)
 
-- [ ] Countdown cards subsystem parity
-- [ ] PDF export parity
-- [ ] Additional test coverage and performance checks
+- [x] Countdown cards subsystem parity
+- [x] PDF export parity
+- [x] Additional test coverage and performance checks
+- [x] Manual parity checklist created for Rust-app comparison (see `docs/PHASE2_MANUAL_PARITY_CHECKLIST.md`)
 
 ## Branching and workflow
 
-- Current implementation branch: `feature/phase1-ui-parity-core-views`
+- Current implementation branch: `feature/phase2-countdown-pdf-foundation`
 - Mainline branch: `main`
 - Solo developer workflow: PRs are not required; direct branch commits and merges are the default.
+- Startup diagnostics: retained in app startup and global exception paths for Phase 2 troubleshooting.
 - Branch naming:
   - `feature/<name>` for feature work
   - `fix/<name>` for bug fixes

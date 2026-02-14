@@ -233,4 +233,49 @@ public class PdfExportServiceTests
         Assert.True(File.Exists(outputPath));
         Assert.True(new FileInfo(outputPath).Length > 0);
     }
+
+    [Fact]
+    public async Task PdfExportService_Should_Generate_Pdf_For_High_Density_Same_Day_Data()
+    {
+        var outputDirectory = Path.Combine(Path.GetTempPath(), "wincalendar-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(outputDirectory);
+        var outputPath = Path.Combine(outputDirectory, "high-density-day.pdf");
+
+        var services = new ServiceCollection();
+        services.AddApplication();
+        services.AddInfrastructure();
+
+        using var provider = services.BuildServiceProvider();
+        var service = provider.GetRequiredService<IPdfExportService>();
+
+        var offset = TimeSpan.FromHours(10);
+        var day = new DateTimeOffset(2026, 9, 3, 0, 0, 0, offset);
+        var events = new List<CalendarEvent>();
+
+        for (var index = 0; index < 60; index++)
+        {
+            var slotStart = day.AddHours(6).AddMinutes(index * 10);
+            events.Add(new CalendarEvent
+            {
+                Id = Guid.NewGuid(),
+                Title = $"High density event {index + 1}",
+                StartDateTime = slotStart,
+                EndDateTime = slotStart.AddMinutes(20),
+                Category = "Work",
+                Location = "Dense Day Grid",
+                Notes = "Phase 4 high-density rendering data regression case"
+            });
+        }
+
+        await service.ExportEventsAsync(
+            events,
+            outputPath,
+            "High Density Day Export",
+            CalendarViewType.Day,
+            day,
+            day.AddDays(1).AddTicks(-1));
+
+        Assert.True(File.Exists(outputPath));
+        Assert.True(new FileInfo(outputPath).Length > 0);
+    }
 }

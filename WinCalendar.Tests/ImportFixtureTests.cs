@@ -111,6 +111,58 @@ public class ImportFixtureTests
         Assert.Equal("light", settingTheme);
     }
 
+    [Fact]
+    public async Task Importer_Should_Persist_Settings_Without_Duplicate_Keys_On_Reimport()
+    {
+        var paths = await CreateFixtureDatabasesAsync();
+
+        var services = new ServiceCollection();
+        services.AddInfrastructure();
+        services.AddRustImport();
+        services.AddSingleton(new SqliteConnectionFactory(paths.TargetPath));
+
+        using var provider = services.BuildServiceProvider();
+        var importer = provider.GetRequiredService<IRustCalendarImporter>();
+
+        var profile = new RustDbImportProfile
+        {
+            SourceDatabasePath = paths.SourcePath,
+            ImportEvents = false,
+            ImportCategories = false,
+            ImportTemplates = false,
+            ImportSettings = true,
+            ImportCustomThemes = false
+        };
+
+        await importer.ImportAsync(profile);
+
+        await using var source = new SqliteConnection($"Data Source={paths.SourcePath}");
+        await source.OpenAsync();
+        await source.ExecuteAsync(
+            "UPDATE settings SET theme = 'dark', default_event_duration = 30, show_week_numbers = 0 WHERE id = 1;");
+
+        await importer.ImportAsync(profile);
+
+        await using var target = new SqliteConnection($"Data Source={paths.TargetPath}");
+        await target.OpenAsync();
+
+        var themeValue = await target.ExecuteScalarAsync<string>(
+            "SELECT value FROM settings WHERE key = 'theme';");
+        var durationValue = await target.ExecuteScalarAsync<string>(
+            "SELECT value FROM settings WHERE key = 'default_event_duration';");
+        var weekNumberValue = await target.ExecuteScalarAsync<string>(
+            "SELECT value FROM settings WHERE key = 'show_week_numbers';");
+
+        Assert.Equal("dark", themeValue);
+        Assert.Equal("30", durationValue);
+        Assert.Equal("0", weekNumberValue);
+
+        var duplicateThemeKeys = await target.ExecuteScalarAsync<long>(
+            "SELECT COUNT(1) FROM settings WHERE key = 'theme';");
+
+        Assert.Equal(1, duplicateThemeKeys);
+    }
+
     private static async Task<(string SourcePath, string TargetPath)> CreateFixtureDatabasesAsync()
     {
         var root = Path.Combine(Path.GetTempPath(), "wincalendar-tests", Guid.NewGuid().ToString("N"));

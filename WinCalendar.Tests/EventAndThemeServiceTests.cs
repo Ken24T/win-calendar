@@ -71,6 +71,61 @@ public class EventAndThemeServiceTests
         Assert.Equal("Ocean", active);
     }
 
+    [Fact]
+    public async Task EventService_Should_Persist_Recurrence_Changes_When_Editing_Existing_Event()
+    {
+        var repository = new InMemoryEventRepository();
+
+        var services = new ServiceCollection();
+        services.AddSingleton<IEventRepository>(repository);
+        services.AddApplication();
+        using var provider = services.BuildServiceProvider();
+
+        var eventService = provider.GetRequiredService<IEventService>();
+        var eventId = Guid.NewGuid();
+        var offset = TimeSpan.FromHours(10);
+
+        var original = new CalendarEvent
+        {
+            Id = eventId,
+            Title = "Weekly planning",
+            StartDateTime = new DateTimeOffset(2026, 3, 2, 9, 0, 0, offset),
+            EndDateTime = new DateTimeOffset(2026, 3, 2, 10, 0, 0, offset),
+            Category = "Work",
+            RecurrenceRule = "FREQ=WEEKLY;BYDAY=MO",
+            RecurrenceExceptions = [new DateTimeOffset(2026, 3, 16, 9, 0, 0, offset)]
+        };
+
+        await eventService.SaveEventAsync(original);
+
+        var edited = new CalendarEvent
+        {
+            Id = eventId,
+            Title = "Weekly planning",
+            StartDateTime = new DateTimeOffset(2026, 3, 2, 9, 30, 0, offset),
+            EndDateTime = new DateTimeOffset(2026, 3, 2, 10, 30, 0, offset),
+            Category = "Work",
+            RecurrenceRule = "FREQ=MONTHLY;BYMONTHDAY=2,15;COUNT=4",
+            RecurrenceExceptions = [
+                new DateTimeOffset(2026, 3, 15, 9, 30, 0, offset),
+                new DateTimeOffset(2026, 4, 15, 9, 30, 0, offset)
+            ]
+        };
+
+        await eventService.SaveEventAsync(edited);
+
+        var allEvents = await eventService.GetEventsAsync();
+
+        var saved = Assert.Single(allEvents);
+        Assert.Equal(eventId, saved.Id);
+        Assert.Equal("FREQ=MONTHLY;BYMONTHDAY=2,15;COUNT=4", saved.RecurrenceRule);
+        Assert.Equal(2, saved.RecurrenceExceptions.Count);
+        Assert.Equal(new DateTimeOffset(2026, 3, 15, 9, 30, 0, offset), saved.RecurrenceExceptions[0]);
+        Assert.Equal(new DateTimeOffset(2026, 4, 15, 9, 30, 0, offset), saved.RecurrenceExceptions[1]);
+        Assert.Equal(new DateTimeOffset(2026, 3, 2, 9, 30, 0, offset), saved.StartDateTime);
+        Assert.Equal(new DateTimeOffset(2026, 3, 2, 10, 30, 0, offset), saved.EndDateTime);
+    }
+
     private sealed class InMemoryEventRepository : IEventRepository
     {
         private readonly List<CalendarEvent> _items = [];
